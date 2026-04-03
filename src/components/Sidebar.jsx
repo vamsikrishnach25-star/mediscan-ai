@@ -1,40 +1,72 @@
 import { NavLink } from "react-router-dom";
-import { FiHome, FiCpu, FiFileText, FiSettings } from "react-icons/fi";
+import {
+  LayoutDashboard,
+  FileText,
+  Upload,
+  Settings,
+  Brain
+} from "lucide-react";
 
 const Sidebar = ({ sidebarOpen }) => {
-  const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2 rounded-md transition
-     ${
-       isActive
-         ? "bg-blue-600 text-white"
-         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-     }`;
+  const linkClass =
+    "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition";
+
+  const activeClass = "bg-blue-600 text-white";
+  const inactiveClass =
+    "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800";
 
   return (
     <aside
-      className={`fixed top-16 h-[calc(100vh-4rem)] w-64
-      bg-white dark:bg-gray-900
-      border-r border-gray-200 dark:border-gray-800
-      transform transition-transform duration-300
-      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      md:translate-x-0`}
+      className={`fixed md:static top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r dark:border-gray-800 transform ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } md:translate-x-0 transition-transform duration-200`}
     >
-      <nav className="mt-4 space-y-1 px-3">
-        <NavLink to="/dashboard" className={linkClass}>
-          <FiHome /> Dashboard
+      <div className="p-6 text-xl font-bold text-blue-600">
+        MediScan AI
+      </div>
+
+      <nav className="space-y-2 px-4">
+
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            `${linkClass} ${isActive ? activeClass : inactiveClass}`
+          }
+        >
+          <LayoutDashboard size={18} />
+          Dashboard
         </NavLink>
 
-        <NavLink to="/ai-scan" className={linkClass}>
-          <FiCpu /> AI Scan
+        <NavLink
+          to="/ai-scan"
+          className={({ isActive }) =>
+            `${linkClass} ${isActive ? activeClass : inactiveClass}`
+          }
+        >
+          <Brain size={18} />
+          AI Scan
         </NavLink>
 
-        <NavLink to="/reports" className={linkClass}>
-          <FiFileText /> Reports
+        <NavLink
+          to="/reports"
+          className={({ isActive }) =>
+            `${linkClass} ${isActive ? activeClass : inactiveClass}`
+          }
+        >
+          <FileText size={18} />
+          Reports
         </NavLink>
 
-        <NavLink to="/settings" className={linkClass}>
-          <FiSettings /> Settings
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `${linkClass} ${isActive ? activeClass : inactiveClass}`
+          }
+        >
+          <Settings size={18} />
+          Settings
         </NavLink>
+
       </nav>
     </aside>
   );

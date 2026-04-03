@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { uploadReport, getReportAnalysis } from "../services/reportService";
-
 function Upload() {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState(null);
@@ -109,5 +108,4 @@ function Upload() {
     </div>
   );
 }
-
 export default Upload;

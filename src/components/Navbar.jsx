@@ -1,40 +1,51 @@
-import { FiSun, FiMoon } from "react-icons/fi";
-import { useTheme } from "../context/ThemeContext";
+import { Menu } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
+import { useLocation } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
-  const { theme, toggleTheme } = useTheme();
   const { logout } = useAuth();
-  const navigate = useNavigate();
+  const { toggleTheme } = useTheme();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    logout();              // clear auth state
-    navigate("/login");    // redirect to login
+  const getTitle = () => {
+    if (location.pathname.includes("dashboard")) return "Dashboard";
+    if (location.pathname.includes("reports")) return "Reports";
+    if (location.pathname.includes("ai-scan")) return "AI Scan";
+    if (location.pathname.includes("settings")) return "Settings";
+    return "MediScan AI";
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-4 flex items-center justify-between">
-      
-      <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400">
-        MediScan AI
-      </h1>
+    <header className="h-16 flex items-center justify-between px-6 border-b bg-white dark:bg-gray-900 dark:border-gray-800">
 
+      {/* LEFT */}
       <div className="flex items-center gap-3">
+        <button onClick={toggleSidebar} className="md:hidden">
+          <Menu />
+        </button>
+        <h1 className="font-semibold text-lg">{getTitle()}</h1>
+      </div>
+
+      {/* RIGHT */}
+      <div className="flex items-center gap-4">
+
         <button
           onClick={toggleTheme}
-          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="text-sm px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800"
         >
-          {theme === "dark" ? <FiSun /> : <FiMoon />}
+          Theme
         </button>
 
         <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          onClick={logout}
+          className="text-sm px-3 py-1 rounded-lg bg-red-500 text-white"
         >
           Logout
         </button>
+
       </div>
+
     </header>
   );
 };
