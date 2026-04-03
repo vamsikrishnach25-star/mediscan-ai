@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "axios": "^1.12.2",
     "D": "^1.0.0",
     "framer-motion": "^12.38.0",
