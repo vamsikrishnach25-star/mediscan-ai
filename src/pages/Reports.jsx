@@ -1,41 +1,31 @@
-import React, { useState } from "react";
-
-/* ---------------- MOCK REPORT DATA ---------------- */
-
-const mockReports = [
-  {
-    id: 1,
-    name: "Blood Test Report",
-    date: "2025-01-10",
-    status: "Normal",
-    confidence: 98,
-    summary: "All blood parameters are within the normal range.",
-    abnormalities: [],
-  },
-  {
-    id: 2,
-    name: "Liver Function Test",
-    date: "2025-01-12",
-    status: "Abnormal",
-    confidence: 91,
-    summary: "Elevated SGPT and SGOT levels detected.",
-    abnormalities: ["SGPT high", "SGOT high"],
-  },
-  {
-    id: 3,
-    name: "Thyroid Profile",
-    date: "2025-01-15",
-    status: "Normal",
-    confidence: 95,
-    summary: "Thyroid hormone levels are normal.",
-    abnormalities: [],
-  },
-];
-
+import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../config/api";
 /* ---------------- COMPONENT ---------------- */
 
 const Reports = () => {
+  const [reports, setReports] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
+
+  useEffect(() => {
+  const fetchReports = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_BASE_URL}/api/v1/medical_reports`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      setReports(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchReports();
+}, []);
 
   return (
     <div className="space-y-6">
@@ -63,31 +53,31 @@ const Reports = () => {
             </tr>
           </thead>
           <tbody>
-            {mockReports.map((report) => (
+            {reports.map((report) => (
               <tr
                 key={report.id}
                 className="border-t border-gray-100 dark:border-gray-700 text-sm"
               >
                 <td className="px-6 py-4 font-medium text-gray-800 dark:text-white">
-                  {report.name}
+                  {report.file_name}
                 </td>
                 <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                  {report.date}
+                  {new Date(report.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold
                       ${
-                        report.status === "Normal"
+                        report.risk_level === "Low"
                           ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                           : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                       }`}
                   >
-                    {report.status}
+                    {report.risk_level}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-gray-700 dark:text-gray-200">
-                  {report.confidence}%
+                      N/A
                 </td>
                 <td className="px-6 py-4">
                   <button
@@ -116,11 +106,11 @@ const Reports = () => {
             </button>
 
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-              {selectedReport.name}
+              {selectedReport.file_name}
             </h2>
 
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Date: {selectedReport.date}
+              Date: {new Date(selectedReport.created_at).toLocaleString()}
             </p>
 
             <div className="space-y-3">
@@ -138,18 +128,18 @@ const Reports = () => {
                   Confidence
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  {selectedReport.confidence}%
+                  N/A
                 </p>
               </div>
 
-              {selectedReport.abnormalities.length > 0 && (
+              {selectedReport.findings?.length > 0 && (
                 <div>
                   <h3 className="font-semibold text-red-600 dark:text-red-400">
                     Abnormalities
                   </h3>
                   <ul className="list-disc ml-6 text-gray-600 dark:text-gray-400">
-                    {selectedReport.abnormalities.map((item, idx) => (
-                      <li key={idx}>{item}</li>
+                        {selectedReport.findings?.map((item, idx) => (
+                        <li key={idx}>{item}</li>
                     ))}
                   </ul>
                 </div>

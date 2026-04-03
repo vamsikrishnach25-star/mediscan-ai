@@ -6,6 +6,7 @@ import RootRedirect from "./components/RootRedirect";
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 
+import Upload from "./pages/Upload";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -40,6 +41,7 @@ function App() {
             <Route path="/ai-scan" element={<AIScan />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/upload" element={<Upload />} /> {/* ✅ MOVED HERE */}
           </Route>
 
         </Routes>
