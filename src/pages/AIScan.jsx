@@ -19,19 +19,19 @@ const AIScan = () => {
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!file) return alert("Upload file first");
-    try {
-      setLoading(true);
-      const uploadRes = await uploadReport(file);
-      const analysisRes = await getReportAnalysis(uploadRes.report_id);
-      setResult(analysisRes);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleAnalyze = async () => {
+  if (!file) return alert("Upload file first");
+  try {
+    setLoading(true);
+    const uploadRes = await uploadReport(file);
+    // Use analysis directly from upload response
+    setResult(uploadRes.analysis || uploadRes.ai_analysis || uploadRes);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const getRiskColor = (level) => {
     if (level === "Critical") return "text-red-600";

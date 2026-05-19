@@ -24,7 +24,7 @@ export const uploadReport = async (file) => {
   return data;
 };
 
-// 🔥 GET ANALYSIS
+// 🔥 GET ANALYSIS - reads directly from upload response
 export const getReportAnalysis = async (reportId) => {
   const token = localStorage.getItem("token");
 
@@ -43,5 +43,6 @@ export const getReportAnalysis = async (reportId) => {
     throw new Error(data.message || "Request failed");
   }
 
-  return data; // ✅ THIS WAS MISSING
+  // ai_analysis contains all the data
+  return data.ai_analysis || data;
 };
