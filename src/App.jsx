@@ -7,6 +7,7 @@ import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import AIScan from "./pages/AIScan";
 import Reports from "./pages/Reports";
@@ -18,8 +19,8 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* ROOT */}
-          <Route path="/" element={<RootRedirect />} />
+          {/* ROOT — Landing Page */}
+          <Route path="/" element={<Home />} />
 
           {/* AUTH ROUTES */}
           <Route element={<AuthLayout />}>
@@ -39,7 +40,6 @@ function App() {
             <Route path="/ai-scan" element={<AIScan />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
-            
           </Route>
 
         </Routes>
