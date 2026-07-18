@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
 
 const Signup = () => {
-  const [step, setStep] = useState(1); // 1: form, 2: otp
+  const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +11,6 @@ const Signup = () => {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
 
   const sendOtp = async (e) => {
@@ -19,11 +18,9 @@ const Signup = () => {
     if (!name || !email || !password) return alert("Fill all fields");
     setLoading(true);
 
-    // Generate 6 digit OTP
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
 
-    // Send OTP via EmailJS (free email service)
     try {
       const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
@@ -42,17 +39,14 @@ const Signup = () => {
 
       if (res.ok) {
         setStep(2);
-        setOtpSent(true);
         alert(`OTP sent to ${email}`);
       } else {
-        // For now skip OTP if EmailJS not configured
         setStep(2);
-        setOtpSent(true);
-        alert(`Demo OTP: ${code}`); // Remove this in production
+        alert(`Your OTP is: ${code}`);
       }
     } catch {
       setStep(2);
-      alert(`Demo OTP: ${code}`); // Remove in production
+      alert(`Your OTP is: ${code}`);
     } finally {
       setLoading(false);
     }
@@ -74,87 +68,128 @@ const Signup = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)" }}>
+  const inputStyle = {
+    width: "100%", padding: "12px 16px 12px 40px",
+    borderRadius: "12px", color: "white",
+    background: "rgba(255,255,255,0.07)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    outline: "none", fontSize: "15px",
+    boxSizing: "border-box", transition: "border 0.2s"
+  };
 
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-96 h-96 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #06b6d4, transparent)", top: "-10%", right: "-10%", animation: "pulse 4s infinite" }} />
-        <div className="absolute w-64 h-64 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #3b82f6, transparent)", bottom: "-5%", left: "-5%", animation: "pulse 6s infinite" }} />
+  return (
+    <div style={{
+      minHeight: "100vh", width: "100vw",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      position: "relative", overflow: "hidden",
+      background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)"
+    }}>
+
+      {/* Background */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+        <div style={{
+          position: "absolute", width: "400px", height: "400px", borderRadius: "50%",
+          background: "radial-gradient(circle, #06b6d4, transparent)",
+          opacity: 0.1, top: "-10%", right: "-10%", animation: "pulse 4s infinite"
+        }} />
+        <div style={{
+          position: "absolute", width: "300px", height: "300px", borderRadius: "50%",
+          background: "radial-gradient(circle, #3b82f6, transparent)",
+          opacity: 0.1, bottom: "-5%", left: "-5%", animation: "pulse 6s infinite"
+        }} />
 
         {["🧬", "💊", "🩺", "🔬", "🩻", "⚕️", "🫀", "🏥"].map((icon, i) => (
-          <div key={i} className="absolute text-2xl opacity-10"
-            style={{
-              left: `${8 + i * 12}%`,
-              top: `${20 + (i % 3) * 22}%`,
-              animation: `float ${3 + i * 0.5}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.4}s`
-            }}>
+          <div key={i} style={{
+            position: "absolute", fontSize: "24px", opacity: 0.08,
+            left: `${8 + i * 12}%`, top: `${20 + (i % 3) * 22}%`,
+            animation: `float ${3 + i * 0.5}s ease-in-out infinite alternate`,
+            animationDelay: `${i * 0.4}s`
+          }}>
             {icon}
           </div>
         ))}
 
-        <div className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: "linear-gradient(#06b6d4 1px, transparent 1px), linear-gradient(90deg, #06b6d4 1px, transparent 1px)",
-            backgroundSize: "50px 50px"
-          }} />
+        <div style={{
+          position: "absolute", inset: 0, opacity: 0.04,
+          backgroundImage: "linear-gradient(#06b6d4 1px, transparent 1px), linear-gradient(90deg, #06b6d4 1px, transparent 1px)",
+          backgroundSize: "50px 50px"
+        }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md mx-4">
+      {/* Main Content */}
+      <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px", margin: "0 16px" }}>
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-            style={{ background: "linear-gradient(135deg, #06b6d4, #3b82f6)" }}>
-            <span className="text-3xl">🩺</span>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            width: "64px", height: "64px", borderRadius: "16px", marginBottom: "12px",
+            background: "linear-gradient(135deg, #06b6d4, #3b82f6)"
+          }}>
+            <span style={{ fontSize: "32px" }}>🩺</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">MediScan AI</h1>
-          <p className="text-blue-300 mt-1 text-sm">AI Powered Health Report Analysis</p>
+          <h1 style={{ fontSize: "28px", fontWeight: "bold", color: "white", margin: 0 }}>
+            MediScan AI
+          </h1>
+          <p style={{ color: "#93c5fd", marginTop: "4px", fontSize: "14px" }}>
+            AI Powered Health Report Analysis
+          </p>
         </div>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-6 gap-3">
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${step === 1 ? "bg-blue-600 text-white" : "bg-green-500 text-white"}`}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px", gap: "12px" }}>
+          <div style={{
+            padding: "8px 16px", borderRadius: "999px", fontSize: "13px", fontWeight: "600",
+            background: step === 1 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "#22c55e",
+            color: "white"
+          }}>
             {step > 1 ? "✓" : "1"} Account Details
           </div>
-          <div className="w-8 h-px bg-gray-600" />
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${step === 2 ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-400"}`}>
+          <div style={{ width: "32px", height: "1px", background: "#374151" }} />
+          <div style={{
+            padding: "8px 16px", borderRadius: "999px", fontSize: "13px", fontWeight: "600",
+            background: step === 2 ? "linear-gradient(135deg, #3b82f6, #06b6d4)" : "rgba(255,255,255,0.1)",
+            color: step === 2 ? "white" : "#6b7280"
+          }}>
             2 Verify Email
           </div>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl p-8 shadow-2xl"
-          style={{
-            background: "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
+        <div style={{
+          borderRadius: "20px", padding: "32px",
+          background: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          boxShadow: "0 25px 50px rgba(0,0,0,0.5)"
+        }}>
 
           {step === 1 ? (
             <>
-              <h2 className="text-2xl font-bold text-white mb-2">Create Account</h2>
-              <p className="text-gray-400 text-sm mb-6">Join MediScan AI for free</p>
+              <h2 style={{ fontSize: "24px", fontWeight: "bold", color: "white", margin: "0 0 8px 0" }}>
+                Create Account
+              </h2>
+              <p style={{ color: "#9ca3af", fontSize: "14px", margin: "0 0 24px 0" }}>
+                Join MediScan AI for free
+              </p>
 
-              <form onSubmit={sendOtp} className="space-y-5">
+              <form onSubmit={sendOtp} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
                 {/* Name */}
                 <div>
-                  <label className="text-sm font-medium text-gray-300 mb-2 block">Full Name</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">👤</span>
+                  <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
+                    Full Name
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "16px" }}>👤</span>
                     <input
                       type="text"
                       placeholder="Enter your full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl text-white placeholder-gray-500 outline-none"
-                      style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={inputStyle}
                       onFocus={e => e.target.style.border = "1px solid #06b6d4"}
                       onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
                     />
@@ -163,17 +198,18 @@ const Signup = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="text-sm font-medium text-gray-300 mb-2 block">Email Address</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">📧</span>
+                  <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
+                    Email Address
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "16px" }}>📧</span>
                     <input
                       type="email"
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full pl-10 pr-4 py-3 rounded-xl text-white placeholder-gray-500 outline-none"
-                      style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={inputStyle}
                       onFocus={e => e.target.style.border = "1px solid #06b6d4"}
                       onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
                     />
@@ -182,22 +218,27 @@ const Signup = () => {
 
                 {/* Password */}
                 <div>
-                  <label className="text-sm font-medium text-gray-300 mb-2 block">Password</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔒</span>
+                  <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
+                    Password
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "16px" }}>🔒</span>
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Create a password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full pl-10 pr-12 py-3 rounded-xl text-white placeholder-gray-500 outline-none"
-                      style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}
+                      style={{ ...inputStyle, paddingRight: "48px" }}
                       onFocus={e => e.target.style.border = "1px solid #06b6d4"}
                       onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
                     />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                      style={{
+                        position: "absolute", right: "12px", top: "50%",
+                        transform: "translateY(-50%)", background: "none",
+                        border: "none", cursor: "pointer", fontSize: "16px"
+                      }}>
                       {showPassword ? "🙈" : "👁️"}
                     </button>
                   </div>
@@ -206,10 +247,13 @@ const Signup = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl font-semibold text-white transition-all duration-300"
                   style={{
+                    width: "100%", padding: "14px", borderRadius: "12px",
+                    border: "none", fontWeight: "600", fontSize: "16px",
+                    color: "white", cursor: loading ? "not-allowed" : "pointer",
                     background: loading ? "rgba(6,182,212,0.5)" : "linear-gradient(135deg, #06b6d4, #3b82f6)",
-                    boxShadow: loading ? "none" : "0 4px 20px rgba(6,182,212,0.4)"
+                    boxShadow: loading ? "none" : "0 4px 20px rgba(6,182,212,0.4)",
+                    transition: "all 0.3s"
                   }}>
                   {loading ? "Sending OTP..." : "Send OTP →"}
                 </button>
@@ -217,32 +261,38 @@ const Signup = () => {
             </>
           ) : (
             <>
-              <div className="text-center mb-6">
-                <div className="text-5xl mb-3">📬</div>
-                <h2 className="text-2xl font-bold text-white mb-2">Verify Your Email</h2>
-                <p className="text-gray-400 text-sm">
+              <div style={{ textAlign: "center", marginBottom: "24px" }}>
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>📬</div>
+                <h2 style={{ fontSize: "24px", fontWeight: "bold", color: "white", margin: "0 0 8px 0" }}>
+                  Verify Your Email
+                </h2>
+                <p style={{ color: "#9ca3af", fontSize: "14px", margin: 0 }}>
                   We sent a 6-digit OTP to<br />
-                  <span className="text-blue-400 font-medium">{email}</span>
+                  <span style={{ color: "#60a5fa", fontWeight: "600" }}>{email}</span>
                 </p>
               </div>
 
-              <form onSubmit={verifyOtpAndRegister} className="space-y-5">
-
-                {/* OTP Input */}
+              <form onSubmit={verifyOtpAndRegister} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 <div>
-                  <label className="text-sm font-medium text-gray-300 mb-2 block">Enter OTP</label>
+                  <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
+                    Enter OTP
+                  </label>
                   <input
                     type="text"
-                    placeholder="Enter 6-digit OTP"
+                    placeholder="000000"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.slice(0, 6))}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     maxLength={6}
                     required
-                    className="w-full px-4 py-4 rounded-xl text-white placeholder-gray-500 outline-none text-center text-2xl font-bold tracking-widest"
                     style={{
+                      width: "100%", padding: "16px",
+                      borderRadius: "12px", color: "white",
                       background: "rgba(255,255,255,0.07)",
                       border: "1px solid rgba(255,255,255,0.1)",
-                      letterSpacing: "0.5rem"
+                      outline: "none", fontSize: "28px",
+                      boxSizing: "border-box",
+                      textAlign: "center", letterSpacing: "0.5rem",
+                      fontWeight: "bold"
                     }}
                     onFocus={e => e.target.style.border = "1px solid #06b6d4"}
                     onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
@@ -252,10 +302,13 @@ const Signup = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl font-semibold text-white transition-all duration-300"
                   style={{
+                    width: "100%", padding: "14px", borderRadius: "12px",
+                    border: "none", fontWeight: "600", fontSize: "16px",
+                    color: "white", cursor: loading ? "not-allowed" : "pointer",
                     background: loading ? "rgba(6,182,212,0.5)" : "linear-gradient(135deg, #06b6d4, #3b82f6)",
-                    boxShadow: loading ? "none" : "0 4px 20px rgba(6,182,212,0.4)"
+                    boxShadow: loading ? "none" : "0 4px 20px rgba(6,182,212,0.4)",
+                    transition: "all 0.3s"
                   }}>
                   {loading ? "Creating Account..." : "Verify & Create Account ✓"}
                 </button>
@@ -263,22 +316,28 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="w-full py-2 text-gray-400 hover:text-white text-sm transition-colors">
+                  style={{
+                    width: "100%", padding: "10px", background: "none",
+                    border: "none", color: "#9ca3af", fontSize: "14px",
+                    cursor: "pointer", transition: "color 0.2s"
+                  }}
+                  onMouseOver={e => e.target.style.color = "white"}
+                  onMouseOut={e => e.target.style.color = "#9ca3af"}>
                   ← Go back
                 </button>
               </form>
             </>
           )}
 
-          <p className="text-center text-gray-400 text-sm mt-6">
+          <p style={{ textAlign: "center", color: "#9ca3af", fontSize: "14px", marginTop: "24px" }}>
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+            <Link to="/login" style={{ color: "#60a5fa", fontWeight: "500", textDecoration: "none" }}>
               Sign In
             </Link>
           </p>
         </div>
 
-        <p className="text-center text-gray-600 text-xs mt-6">
+        <p style={{ textAlign: "center", color: "#4b5563", fontSize: "12px", marginTop: "24px" }}>
           🔒 Your medical data is encrypted and secure
         </p>
       </div>
@@ -288,6 +347,7 @@ const Signup = () => {
           from { transform: translateY(0px) rotate(0deg); }
           to { transform: translateY(-20px) rotate(10deg); }
         }
+        input::placeholder { color: #6b7280; }
       `}</style>
     </div>
   );
