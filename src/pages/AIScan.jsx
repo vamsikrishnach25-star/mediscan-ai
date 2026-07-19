@@ -207,14 +207,15 @@ const AIScan = () => {
         </html>
       `;
 
-      const printWindow = window.open("", "_blank");
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
+      const blob = new Blob([printContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `MediScan-Report-${new Date().toLocaleDateString("en-IN").replace(/\//g, "-")}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } catch (err) {
       alert("PDF download failed");
     } finally {
