@@ -4,18 +4,19 @@ import { useTheme } from "../context/ThemeContext";
 import { useLocation } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { toggleTheme } = useTheme();
   const location = useLocation();
 
   const getTitle = () => {
-    if (location.pathname.includes("welcome")) return "Welcome";
     if (location.pathname.includes("dashboard")) return "Dashboard";
     if (location.pathname.includes("reports")) return "Reports";
     if (location.pathname.includes("ai-scan")) return "AI Scan";
     if (location.pathname.includes("settings")) return "Settings";
-    return "MediScan AI";
+    return "";
   };
+
+  const isWelcome = location.pathname.includes("welcome");
 
   return (
     <header className="h-16 flex items-center justify-between px-6 border-b bg-white dark:bg-gray-900 dark:border-gray-800">
@@ -25,7 +26,14 @@ const Navbar = ({ toggleSidebar }) => {
         <button onClick={toggleSidebar} className="md:hidden">
           <Menu />
         </button>
-        <h1 className="font-semibold text-lg">{getTitle()}</h1>
+        {!isWelcome && getTitle() && (
+          <h1 className="font-semibold text-lg">{getTitle()}</h1>
+        )}
+        {isWelcome && user?.name && (
+          <p className="text-gray-500 text-sm">
+            👋 Hello, <span className="font-semibold text-blue-600">{user.name}</span>
+          </p>
+        )}
       </div>
 
       {/* RIGHT */}
@@ -41,7 +49,6 @@ const Navbar = ({ toggleSidebar }) => {
           Logout
         </button>
       </div>
-
     </header>
   );
 };

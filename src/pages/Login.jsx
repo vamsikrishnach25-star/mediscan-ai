@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,6 +18,7 @@ const Login = () => {
       const res = await loginUser(email, password);
       if (res?.token) {
         localStorage.setItem("token", res.token);
+        login({ name: res.name || email.split("@")[0], email: email });
         navigate("/welcome");
       } else {
         alert("No token received");
