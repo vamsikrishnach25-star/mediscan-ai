@@ -30,11 +30,11 @@ const Reports = () => {
     fetchReports();
   }, []);
 
-  const getRiskLevel = (report) => 
-  report.ai_analysis?.risk_level || report.risk_level || "Unknown";
-
-  const getHealthScore = (report) => 
-  report.ai_analysis?.health_score ?? report.health_score ?? null;
+  // ✅ Read from both ai_analysis and direct fields
+  const getAnalysis = (report) => report.ai_analysis || report;
+  const getRiskLevel = (report) => report.ai_analysis?.risk_level || report.risk_level || "Unknown";
+  const getHealthScore = (report) => report.ai_analysis?.health_score ?? report.health_score ?? null;
+  const getReportType = (report) => report.ai_analysis?.report_type || report.file_name || "Medical Report";
 
   const getRiskColor = (risk) => {
     if (risk === "Low") return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
@@ -60,15 +60,12 @@ const Reports = () => {
     return 0;
   };
 
-  // Health score chart data
-  const healthScoreData = [...reports].reverse().map((r, i) => ({
+  const healthScoreData = [...reports].reverse().map((r) => ({
     date: new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
-    score: getHealthScore(r) ?? 0,
-    risk: getRiskScore(getRiskLevel(r)),
+    score: getHealthScore(r) ?? getRiskScore(getRiskLevel(r)) * 20,
     riskLabel: getRiskLevel(r),
   }));
 
-  // Trend calculation
   const getTrend = () => {
     if (reports.length < 2) return null;
     const latest = getRiskScore(getRiskLevel(reports[0]));
@@ -103,7 +100,7 @@ const Reports = () => {
             : trend === "worsening" ? "bg-red-100 text-red-700"
             : "bg-gray-100 text-gray-700"
           }`}>
-            {trend === "improving" ? <TrendingDown size={16} /> 
+            {trend === "improving" ? <TrendingDown size={16} />
             : trend === "worsening" ? <TrendingUp size={16} />
             : <Minus size={16} />}
             Health is {trend === "improving" ? "Improving 🎉" : trend === "worsening" ? "Worsening ⚠️" : "Stable"}
@@ -123,52 +120,50 @@ const Reports = () => {
       ) : (
         <>
           {/* Health Score Tracker */}
-          {healthScoreData.length > 1 && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
-              <h2 className="font-bold text-lg mb-1">📈 Health Score Tracker</h2>
-              <p className="text-gray-500 text-sm mb-4">
-                Lower score = healthier. Score increases with more abnormal markers.
-              </p>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={healthScoreData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                  <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}`} tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    formatter={(value, name) => [`${value}`, "Health Score"]}
-                    labelFormatter={(label) => `Date: ${label}`}
-                  />
-                  <Line
-                    dataKey="score"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    dot={{ fill: "#3b82f6", r: 5 }}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+            <h2 className="font-bold text-lg mb-1">📈 Health Score Tracker</h2>
+            <p className="text-gray-500 text-sm mb-4">
+              Lower score = healthier. Track your health trend over time.
+            </p>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={healthScoreData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+                <Tooltip
+                  formatter={(value) => [`${value}`, "Health Score"]}
+                  labelFormatter={(label) => `Date: ${label}`}
+                />
+                <Line
+                  dataKey="score"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ fill: "#3b82f6", r: 5 }}
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
 
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                  <p className="text-2xl font-bold text-blue-600">{reports.length}</p>
-                  <p className="text-xs text-gray-500">Total Reports</p>
-                </div>
-                <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                  <p className="text-2xl font-bold text-green-600">
-                    {reports.filter(r => getRiskLevel(r) === "Low").length}
-                  </p>
-                  <p className="text-xs text-gray-500">Low Risk</p>
-                </div>
-                <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                  <p className="text-2xl font-bold text-red-500">
-                    {reports.filter(r => ["High", "Critical"].includes(getRiskLevel(r))).length}
-                  </p>
-                  <p className="text-xs text-gray-500">High Risk</p>
-                </div>
+            {/* Stats Row */}
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <p className="text-2xl font-bold text-blue-600">{reports.length}</p>
+                <p className="text-xs text-gray-500">Total Reports</p>
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                <p className="text-2xl font-bold text-green-600">
+                  {reports.filter(r => getRiskLevel(r) === "Low").length}
+                </p>
+                <p className="text-xs text-gray-500">Low Risk</p>
+              </div>
+              <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                <p className="text-2xl font-bold text-red-500">
+                  {reports.filter(r => ["High", "Critical"].includes(getRiskLevel(r))).length}
+                </p>
+                <p className="text-xs text-gray-500">High Risk</p>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Tabs */}
           <div className="flex gap-2">
@@ -190,11 +185,10 @@ const Reports = () => {
               {reports.map((report, i) => {
                 const risk = getRiskLevel(report);
                 const score = getHealthScore(report);
-                const analysis = report.ai_analysis;
+                const a = getAnalysis(report);
 
                 return (
                   <div key={report.id} className="flex gap-4">
-                    {/* Timeline line */}
                     <div className="flex flex-col items-center">
                       <div style={{
                         width: "16px", height: "16px", borderRadius: "50%",
@@ -208,14 +202,11 @@ const Reports = () => {
                       )}
                     </div>
 
-                    {/* Card */}
                     <div className="flex-1 bg-white dark:bg-gray-800 rounded-2xl shadow p-5 mb-2 hover:shadow-md transition cursor-pointer"
                       onClick={() => setSelectedReport(report)}>
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-bold text-base">
-                            {analysis?.report_type || "Medical Report"}
-                          </p>
+                          <p className="font-bold text-base">{getReportType(report)}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             {new Date(report.created_at).toLocaleDateString("en-IN", {
                               day: "numeric", month: "long", year: "numeric"
@@ -235,24 +226,17 @@ const Reports = () => {
                         </div>
                       </div>
 
-                      {analysis?.summary && (
-                        <p className="text-sm text-gray-500 mt-3 line-clamp-2">
-                          {analysis.summary}
-                        </p>
+                      {a?.summary && (
+                        <p className="text-sm text-gray-500 mt-3 line-clamp-2">{a.summary}</p>
                       )}
 
-                      {analysis?.abnormal_markers?.length > 0 && (
+                      {(a?.abnormal_markers?.length > 0 || a?.findings?.length > 0) && (
                         <div className="flex flex-wrap gap-2 mt-3">
-                          {analysis.abnormal_markers.slice(0, 3).map((m, j) => (
+                          {(a?.abnormal_markers || a?.findings || []).slice(0, 3).map((m, j) => (
                             <span key={j} className="text-xs bg-red-50 dark:bg-red-900/20 text-red-600 px-2 py-1 rounded-lg">
                               ⚠️ {m}
                             </span>
                           ))}
-                          {analysis.abnormal_markers.length > 3 && (
-                            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-lg">
-                              +{analysis.abnormal_markers.length - 3} more
-                            </span>
-                          )}
                         </div>
                       )}
 
@@ -283,9 +267,7 @@ const Reports = () => {
                     const score = getHealthScore(report);
                     return (
                       <tr key={report.id} className="border-t hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                        <td className="px-6 py-4 font-medium">
-                          {report.ai_analysis?.report_type || "Medical Report"}
-                        </td>
+                        <td className="px-6 py-4 font-medium">{getReportType(report)}</td>
                         <td className="px-6 py-4 text-gray-500 text-sm">
                           {new Date(report.created_at).toLocaleDateString()}
                         </td>
@@ -320,12 +302,9 @@ const Reports = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl"
             onClick={e => e.stopPropagation()}>
 
-            {/* Modal Header */}
             <div className="sticky top-0 bg-white dark:bg-gray-800 px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between z-10">
               <div>
-                <h2 className="text-xl font-bold">
-                  {selectedReport.ai_analysis?.report_type || "Medical Report"}
-                </h2>
+                <h2 className="text-xl font-bold">{getReportType(selectedReport)}</h2>
                 <p className="text-sm text-gray-500">
                   {new Date(selectedReport.created_at).toLocaleDateString("en-IN", {
                     day: "numeric", month: "long", year: "numeric"
@@ -340,8 +319,9 @@ const Reports = () => {
 
             <div className="p-6 space-y-6">
               {(() => {
+                // ✅ Read from both ai_analysis and direct fields
                 const a = selectedReport.ai_analysis || selectedReport;
-                if (!a) return <p className="text-gray-500">No analysis data available.</p>;
+                const risk = getRiskLevel(selectedReport);
 
                 return (
                   <>
@@ -349,16 +329,18 @@ const Reports = () => {
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                         <h3 className="font-semibold mb-2">Summary</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">{a.summary}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{a.summary || "No summary available"}</p>
                       </div>
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                         <h3 className="font-semibold mb-2">Risk Level</h3>
                         <p className={`text-2xl font-bold ${
-                          a.risk_level === "Low" ? "text-green-500"
-                          : a.risk_level === "Moderate" ? "text-yellow-500"
+                          risk === "Low" ? "text-green-500"
+                          : risk === "Moderate" ? "text-yellow-500"
                           : "text-red-500"
-                        }`}>{a.risk_level}</p>
-                        <p className="text-sm text-gray-500 mt-1">{a.severity_score || 0} abnormal marker(s)</p>
+                        }`}>{risk}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {a.severity_score || 0} abnormal marker(s)
+                        </p>
                       </div>
                     </div>
 
@@ -376,6 +358,21 @@ const Reports = () => {
                               <p className="font-medium text-xs">{b.name}</p>
                               <p className="text-lg font-bold">{b.value}</p>
                               <p className="text-xs">{b.status}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Biomarkers from direct field */}
+                    {!a.highlighted_biomarkers && a.biomarkers && Object.keys(a.biomarkers).length > 0 && (
+                      <div>
+                        <h3 className="font-semibold mb-3">Biomarkers</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {Object.entries(a.biomarkers).map(([name, value], i) => (
+                            <div key={i} className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-sm">
+                              <p className="font-medium text-xs text-gray-600">{name}</p>
+                              <p className="text-lg font-bold text-blue-600">{value}</p>
                             </div>
                           ))}
                         </div>
