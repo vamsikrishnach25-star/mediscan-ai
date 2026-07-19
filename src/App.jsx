@@ -8,6 +8,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import AIScan from "./pages/AIScan";
 import Reports from "./pages/Reports";

@@ -16,7 +16,7 @@ const Login = () => {
       const res = await loginUser(email, password);
       if (res?.token) {
         localStorage.setItem("token", res.token);
-        navigate("/dashboard");
+        navigate("/welcome");
       } else {
         alert("No token received");
       }
