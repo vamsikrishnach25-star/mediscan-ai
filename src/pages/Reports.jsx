@@ -30,8 +30,11 @@ const Reports = () => {
     fetchReports();
   }, []);
 
-  const getRiskLevel = (report) => report.ai_analysis?.risk_level || "Unknown";
-  const getHealthScore = (report) => report.ai_analysis?.health_score ?? null;
+  const getRiskLevel = (report) => 
+  report.ai_analysis?.risk_level || report.risk_level || "Unknown";
+
+  const getHealthScore = (report) => 
+  report.ai_analysis?.health_score ?? report.health_score ?? null;
 
   const getRiskColor = (risk) => {
     if (risk === "Low") return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
@@ -337,7 +340,7 @@ const Reports = () => {
 
             <div className="p-6 space-y-6">
               {(() => {
-                const a = selectedReport.ai_analysis;
+                const a = selectedReport.ai_analysis || selectedReport;
                 if (!a) return <p className="text-gray-500">No analysis data available.</p>;
 
                 return (
