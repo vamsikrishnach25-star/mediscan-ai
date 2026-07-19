@@ -9,6 +9,7 @@ const Navbar = ({ toggleSidebar }) => {
   const location = useLocation();
 
   const getTitle = () => {
+    if (location.pathname.includes("welcome")) return "Welcome";
     if (location.pathname.includes("dashboard")) return "Dashboard";
     if (location.pathname.includes("reports")) return "Reports";
     if (location.pathname.includes("ai-scan")) return "AI Scan";
@@ -29,21 +30,16 @@ const Navbar = ({ toggleSidebar }) => {
 
       {/* RIGHT */}
       <div className="flex items-center gap-4">
-
         <button
           onClick={toggleTheme}
-          className="text-sm px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800"
-        >
+          className="text-sm px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800">
           Theme
         </button>
-
         <button
           onClick={logout}
-          className="text-sm px-3 py-1 rounded-lg bg-red-500 text-white"
-        >
+          className="text-sm px-3 py-1 rounded-lg bg-red-500 text-white">
           Logout
         </button>
-
       </div>
 
     </header>
