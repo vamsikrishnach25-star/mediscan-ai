@@ -1,14 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RootRedirect from "./components/RootRedirect";
 
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
-import Welcome from "./pages/welcome";
+import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import AIScan from "./pages/AIScan";
 import Reports from "./pages/Reports";
@@ -20,7 +19,7 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* ROOT — Landing Page */}
+          {/* Public Landing Page */}
           <Route path="/" element={<Home />} />
 
           {/* AUTH ROUTES */}
@@ -37,6 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           >
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/ai-scan" element={<AIScan />} />
             <Route path="/reports" element={<Reports />} />
