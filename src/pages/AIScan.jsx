@@ -16,6 +16,7 @@ const AIScan = () => {
   const [userEmail, setUserEmail] = useState("");
   const [showEmailModal, setShowEmailModal] = useState(false);
   const resultRef = useRef(null);
+  const [language, setLanguage] = useState("English");
 
   const handleFileChange = (e) => {
     const uploaded = e.target.files[0];
@@ -29,17 +30,17 @@ const AIScan = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!file) return alert("Upload file first");
-    try {
-      setLoading(true);
-      const uploadRes = await uploadReport(file);
-      setResult(uploadRes.analysis || uploadRes.ai_analysis || uploadRes);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!file) return alert("Upload file first");
+  try {
+    setLoading(true);
+    const uploadRes = await uploadReport(file, language);
+    setResult(uploadRes.analysis || uploadRes.ai_analysis || uploadRes);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // 🔊 Voice Summary
   const handleVoice = () => {
@@ -292,6 +293,26 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
     <div className="max-w-5xl mx-auto space-y-8">
 
       <h1 className="text-3xl font-bold">AI Report Analysis</h1>
+
+      {/* Language Selector */}
+<div className="flex items-center gap-3 flex-wrap">
+  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">🌍 Analysis Language:</span>
+  {["English", "Telugu", "Hindi", "Tamil"].map(lang => (
+    <button
+      key={lang}
+      onClick={() => setLanguage(lang)}
+      className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+        language === lang
+          ? "bg-blue-600 text-white"
+          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
+      }`}>
+      {lang === "English" ? "🇬🇧 English"
+       : lang === "Telugu" ? "🇮🇳 తెలుగు"
+       : lang === "Hindi" ? "🇮🇳 हिंदी"
+       : "🇮🇳 தமிழ்"}
+    </button>
+  ))}
+</div>
 
       {/* Upload Card */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow text-center border border-dashed">

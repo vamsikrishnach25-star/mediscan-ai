@@ -1,11 +1,10 @@
 import API_BASE_URL from "../config/api";
 
-// 🔥 UPLOAD REPORT
-export const uploadReport = async (file) => {
+export const uploadReport = async (file, language = "English") => {
   const token = localStorage.getItem("token");
-
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("language", language);
 
   const res = await fetch(`${API_BASE_URL}/api/v1/upload_report`, {
     method: "POST",
@@ -16,11 +15,9 @@ export const uploadReport = async (file) => {
   });
 
   const data = await res.json();
-
   if (!res.ok) {
     throw new Error(data.error || "Upload failed");
   }
-
   return data;
 };
 
