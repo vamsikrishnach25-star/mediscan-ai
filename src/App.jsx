@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useEffect } from "react";
 
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
@@ -14,6 +15,20 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 
 function App() {
+
+  // 🔥 Keep Render backend awake — ping every 14 minutes
+  useEffect(() => {
+    const keepAlive = setInterval(() => {
+      fetch("https://mediscan-ai-backend-5ele.onrender.com/api/v1/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "ping@ping.com", password: "ping" })
+      }).catch(() => {});
+    }, 14 * 60 * 1000);
+
+    return () => clearInterval(keepAlive);
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
