@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import API_BASE_URL from "../config/api";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid
+  ResponsiveContainer, CartesianGrid, Legend
 } from "recharts";
 import { AlertTriangle, CheckCircle, XCircle, Apple, Stethoscope, X, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
@@ -30,7 +30,6 @@ const Reports = () => {
     fetchReports();
   }, []);
 
-  // ✅ Read from both ai_analysis and direct fields
   const getAnalysis = (report) => report.ai_analysis || report;
   const getRiskLevel = (report) => report.ai_analysis?.risk_level || report.risk_level || "Unknown";
   const getHealthScore = (report) => report.ai_analysis?.health_score ?? report.health_score ?? null;
@@ -60,11 +59,15 @@ const Reports = () => {
     return 0;
   };
 
-  const healthScoreData = [...reports].reverse().map((r) => ({
-    date: new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
-    score: getHealthScore(r) ?? getRiskScore(getRiskLevel(r)) * 20,
-    riskLabel: getRiskLevel(r),
-  }));
+  const healthScoreData = [...reports].reverse().map((r) => {
+    const a = getAnalysis(r);
+    return {
+      date: new Date(r.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+      score: getHealthScore(r) ?? getRiskScore(getRiskLevel(r)) * 20,
+      abnormal: a?.abnormal_markers?.length ?? a?.severity_score ?? 0,
+      riskLabel: getRiskLevel(r),
+    };
+  });
 
   const getTrend = () => {
     if (reports.length < 2) return null;
@@ -123,23 +126,36 @@ const Reports = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
             <h2 className="font-bold text-lg mb-1">📈 Health Score Tracker</h2>
             <p className="text-gray-500 text-sm mb-4">
-              Lower score = healthier. Track your health trend over time.
+              Track your health score and abnormal markers over time.
             </p>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={healthScoreData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
-                  formatter={(value) => [`${value}`, "Health Score"]}
+                  formatter={(value, name) => [
+                    value,
+                    name === "score" ? "Health Score" : "Abnormal Markers"
+                  ]}
                   labelFormatter={(label) => `Date: ${label}`}
                 />
+                <Legend formatter={(value) => value === "score" ? "Health Score" : "Abnormal Markers"} />
                 <Line
                   dataKey="score"
                   stroke="#3b82f6"
                   strokeWidth={3}
-                  dot={{ fill: "#3b82f6", r: 5 }}
-                  activeDot={{ r: 8 }}
+                  dot={{ fill: "#3b82f6", r: 4 }}
+                  activeDot={{ r: 7 }}
+                  name="score"
+                />
+                <Line
+                  dataKey="abnormal"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={{ fill: "#ef4444", r: 4 }}
+                  activeDot={{ r: 7 }}
+                  name="abnormal"
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -319,13 +335,11 @@ const Reports = () => {
 
             <div className="p-6 space-y-6">
               {(() => {
-                // ✅ Read from both ai_analysis and direct fields
                 const a = selectedReport.ai_analysis || selectedReport;
                 const risk = getRiskLevel(selectedReport);
 
                 return (
                   <>
-                    {/* Summary + Risk */}
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                         <h3 className="font-semibold mb-2">Summary</h3>
@@ -338,13 +352,10 @@ const Reports = () => {
                           : risk === "Moderate" ? "text-yellow-500"
                           : "text-red-500"
                         }`}>{risk}</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          {a.severity_score || 0} abnormal marker(s)
-                        </p>
+                        <p className="text-sm text-gray-500 mt-1">{a.severity_score || 0} abnormal marker(s)</p>
                       </div>
                     </div>
 
-                    {/* Biomarkers */}
                     {a.highlighted_biomarkers?.length > 0 && (
                       <div>
                         <h3 className="font-semibold mb-3">Biomarker Status</h3>
@@ -364,7 +375,6 @@ const Reports = () => {
                       </div>
                     )}
 
-                    {/* Biomarkers from direct field */}
                     {!a.highlighted_biomarkers && a.biomarkers && Object.keys(a.biomarkers).length > 0 && (
                       <div>
                         <h3 className="font-semibold mb-3">Biomarkers</h3>
@@ -379,7 +389,6 @@ const Reports = () => {
                       </div>
                     )}
 
-                    {/* Findings + Conditions */}
                     <div className="grid md:grid-cols-2 gap-4">
                       {a.findings?.length > 0 && (
                         <div>
@@ -411,7 +420,6 @@ const Reports = () => {
                       )}
                     </div>
 
-                    {/* Food Suggestions */}
                     {a.food_suggestions && (
                       <div>
                         <h3 className="font-semibold mb-3 flex items-center gap-2">
@@ -438,7 +446,6 @@ const Reports = () => {
                       </div>
                     )}
 
-                    {/* Doctor Advice */}
                     {a.doctor_advice && (
                       <div>
                         <h3 className="font-semibold mb-3 flex items-center gap-2">
@@ -481,7 +488,6 @@ const Reports = () => {
                       </div>
                     )}
 
-                    {/* Recommendations */}
                     {a.recommendations?.length > 0 && (
                       <div>
                         <h3 className="font-semibold mb-2">💡 Recommendations</h3>
