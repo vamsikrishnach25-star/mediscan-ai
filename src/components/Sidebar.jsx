@@ -1,8 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, FileText, Settings, Brain, Home
+  LayoutDashboard, FileText, Settings, Brain, Home, GitCompare
 } from "lucide-react";
-import { LayoutDashboard, FileText, Settings, Brain, Home, GitCompare } from "lucide-react";
 
 const Sidebar = ({ sidebarOpen }) => {
   const navigate = useNavigate();
