@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import AIScan from "./pages/AIScan";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Compare from "./pages/Compare";
 
 function App() {
 
@@ -56,6 +57,7 @@ function App() {
             <Route path="/ai-scan" element={<AIScan />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/compare" element={<Compare />} />
           </Route>
 
         </Routes>

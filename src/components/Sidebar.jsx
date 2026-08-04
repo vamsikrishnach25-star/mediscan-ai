@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Settings, Brain, Home
 } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, Brain, Home, GitCompare } from "lucide-react";
 
 const Sidebar = ({ sidebarOpen }) => {
   const navigate = useNavigate();
@@ -48,6 +49,10 @@ const Sidebar = ({ sidebarOpen }) => {
         <NavLink to="/settings"
           className={({ isActive }) => `${linkClass} ${isActive ? activeClass : inactiveClass}`}>
           <Settings size={18} /> Settings
+        </NavLink>
+        <NavLink to="/compare"
+          className={({ isActive }) => `${linkClass} ${isActive ? activeClass : inactiveClass}`}>
+          <GitCompare size={18} /> Compare
         </NavLink>
 
       </nav>
