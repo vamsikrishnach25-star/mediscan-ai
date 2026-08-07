@@ -17,6 +17,7 @@ const AIScan = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const resultRef = useRef(null);
   const [language, setLanguage] = useState("English");
+  const [doctorView, setDoctorView] = useState(false);
 
   const handleFileChange = (e) => {
     const uploaded = e.target.files[0];
@@ -108,6 +109,11 @@ const AIScan = () => {
             .normal { background: #f0fdf4; color: #16a34a; }
             .high-marker { background: #fef2f2; color: #dc2626; }
             .low-marker { background: #fffbeb; color: #d97706; }
+            .abnormal-marker { background: #fef2f2; color: #dc2626; }
+            .borderline-marker { background: #fffbeb; color: #d97706; }
+            .critical-box { background: #fef2f2; border: 2px solid #f87171; padding: 16px; border-radius: 12px; margin-bottom: 24px; }
+            .critical-box h2 { color: #b91c1c; margin: 0 0 10px 0; }
+            .critical-box li { color: #b91c1c; }
           </style>
         </head>
         <body>
@@ -117,6 +123,11 @@ const AIScan = () => {
             <div class="badge">${result.report_type || "Medical Report"}</div>
             <p style="color:#94a3b8; font-size:12px; margin-top:8px;">Generated on ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</p>
           </div>
+          ${result.critical_alerts?.length > 0 ? `
+          <div class="critical-box">
+            <h2>🚨 Critical Values — Seek Medical Attention</h2>
+            <ul>${result.critical_alerts.map(c => `<li><strong>${c.name} critically ${c.direction}</strong> (${c.value}) — ${c.note}</li>`).join("")}</ul>
+          </div>` : ""}
           <div class="grid">
             <div class="section">
               <h2>📋 Summary</h2>
@@ -137,6 +148,19 @@ const AIScan = () => {
                   <p style="font-size:12px; margin:0;">${b.name}</p>
                   <p style="font-size:18px; font-weight:bold; margin:4px 0;">${b.value}</p>
                   <p style="font-size:11px; margin:0;">${b.status}</p>
+                </div>
+              `).join("")}
+            </div>
+          </div>` : ""}
+          ${result.highlighted_qualitative_results?.length > 0 ? `
+          <div class="section">
+            <h2>🧪 Test Results</h2>
+            <div class="biomarker-grid">
+              ${result.highlighted_qualitative_results.map(q => `
+                <div class="biomarker-card ${q.status === "ABNORMAL" ? "abnormal-marker" : q.status === "BORDERLINE" ? "borderline-marker" : "normal"}">
+                  <p style="font-size:12px; margin:0;">${q.name}</p>
+                  <p style="font-size:16px; font-weight:bold; margin:4px 0;">${q.value}</p>
+                  <p style="font-size:11px; margin:0;">${q.status}</p>
                 </div>
               `).join("")}
             </div>
@@ -291,6 +315,13 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
     return "text-green-500 bg-green-50 dark:bg-green-900/20";
   };
 
+  const getQualitativeColor = (status) => {
+    if (status === "ABNORMAL") return "text-red-500 bg-red-50 dark:bg-red-900/20";
+    if (status === "BORDERLINE") return "text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20";
+    if (status === "NORMAL") return "text-green-500 bg-green-50 dark:bg-green-900/20";
+    return "text-gray-400 bg-gray-50 dark:bg-gray-700/40";
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
 
@@ -323,7 +354,13 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
             <UploadCloud size={40} className="text-blue-500" />
             <p className="text-gray-600">Click to upload any medical report</p>
             <p className="text-sm text-gray-400">Blood, Thyroid, Liver, Kidney, Lipid, Urine, X-Ray and more</p>
-            <input type="file" onChange={handleFileChange} className="hidden" />
+            <p className="text-xs text-gray-400">Supported: JPG, PNG, PDF</p>
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </label>
         ) : (
           <div className="space-y-4">
@@ -373,7 +410,90 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
               <span>📧</span>
               {emailSent ? "✅ Email Sent!" : "Email Report"}
             </button>
+
+            <button onClick={() => setDoctorView(!doctorView)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition ${
+                doctorView ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-200"
+              }`}>
+              <Stethoscope size={16} />
+              {doctorView ? "Patient View" : "🩺 Doctor View"}
+            </button>
           </div>
+
+          {/* Critical Alerts — panic values that need urgent medical attention */}
+          {result.critical_alerts?.length > 0 && (
+            <div className="bg-red-50 dark:bg-red-950/40 border-2 border-red-400 rounded-2xl p-6">
+              <h2 className="font-bold text-lg text-red-700 dark:text-red-300 flex items-center gap-2 mb-3">
+                <AlertTriangle size={22} />
+                Critical Values Detected — Seek Medical Attention
+              </h2>
+              <ul className="space-y-2">
+                {result.critical_alerts.map((c, i) => (
+                  <li key={i} className="text-sm text-red-700 dark:text-red-300 bg-white/60 dark:bg-black/20 p-3 rounded-lg">
+                    <span className="font-semibold">{c.name} is critically {c.direction}</span> ({c.value}) — {c.note}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-red-500 mt-3">This is not a diagnosis — please contact a doctor or emergency services promptly to confirm and act on this result.</p>
+            </div>
+          )}
+
+          {/* Doctor View — compact clinical-style summary */}
+          {doctorView && result.clinical_summary && (
+            <div className="bg-white dark:bg-gray-800 border border-slate-300 dark:border-slate-600 rounded-2xl p-6 font-mono text-sm space-y-3">
+              <h2 className="font-semibold text-base flex items-center gap-2 mb-2">
+                <Stethoscope size={18} className="text-slate-600" /> Clinical Summary
+              </h2>
+              <p><span className="text-gray-500">Report Type:</span> {result.clinical_summary.report_type}</p>
+              <p><span className="text-gray-500">Overall Risk:</span> <span className={getRiskColor(result.clinical_summary.overall_risk)}>{result.clinical_summary.overall_risk}</span></p>
+              {result.clinical_summary.health_score !== null && result.clinical_summary.health_score !== undefined && (
+                <p><span className="text-gray-500">Health Score:</span> {result.clinical_summary.health_score}/100</p>
+              )}
+              {result.clinical_summary.abnormal_numeric_findings?.length > 0 && (
+                <div>
+                  <p className="text-gray-500">Abnormal Numeric Findings:</p>
+                  <ul className="ml-4 list-disc">
+                    {result.clinical_summary.abnormal_numeric_findings.map((b, i) => (
+                      <li key={i}>{b.name}: {b.value} ({b.status})</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {result.clinical_summary.abnormal_qualitative_findings?.length > 0 && (
+                <div>
+                  <p className="text-gray-500">Abnormal Qualitative Findings:</p>
+                  <ul className="ml-4 list-disc">
+                    {result.clinical_summary.abnormal_qualitative_findings.map((q, i) => (
+                      <li key={i}>{q.name}: {q.value} ({q.status})</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {result.clinical_summary.differential_considerations?.length > 0 && (
+                <div>
+                  <p className="text-gray-500">Differential Considerations:</p>
+                  <ul className="ml-4 list-disc">
+                    {result.clinical_summary.differential_considerations.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <p><span className="text-gray-500">Impression:</span> {result.clinical_summary.impression}</p>
+              <p><span className="text-gray-500">Recommended Specialist:</span> {result.clinical_summary.recommended_specialist} ({result.clinical_summary.urgency})</p>
+              {result.clinical_summary.warning_signs?.length > 0 && (
+                <div>
+                  <p className="text-gray-500">Warning Signs:</p>
+                  <ul className="ml-4 list-disc">
+                    {result.clinical_summary.warning_signs.map((w, i) => (
+                      <li key={i}>{w}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <p className="text-xs text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">Generated for clinical reference only — not a substitute for professional diagnosis.</p>
+            </div>
+          )}
 
           {/* Report Type Badge */}
           {result.report_type && (
@@ -413,6 +533,22 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
                     <p className="font-medium text-sm">{b.name}</p>
                     <p className="text-lg font-bold">{b.value}</p>
                     <p className="text-xs font-semibold">{b.status}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Qualitative Test Results (infection screens, dipstick tests, etc.) */}
+          {result.highlighted_qualitative_results?.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+              <h2 className="font-semibold mb-4 text-lg">Test Results</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {result.highlighted_qualitative_results.map((q, i) => (
+                  <div key={i} className={`p-3 rounded-xl ${getQualitativeColor(q.status)}`}>
+                    <p className="font-medium text-sm">{q.name}</p>
+                    <p className="text-lg font-bold">{q.value}</p>
+                    <p className="text-xs font-semibold">{q.status}</p>
                   </div>
                 ))}
               </div>
