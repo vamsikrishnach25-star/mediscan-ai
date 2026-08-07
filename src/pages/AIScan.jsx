@@ -94,6 +94,7 @@ const AIScan = () => {
             .risk-moderate { color: #d97706; font-size: 24px; font-weight: bold; }
             .risk-high { color: #dc2626; font-size: 24px; font-weight: bold; }
             .risk-critical { color: #7f1d1d; font-size: 24px; font-weight: bold; }
+            .risk-unknown { color: #6b7280; font-size: 24px; font-weight: bold; }
             ul { padding-left: 20px; }
             li { margin-bottom: 6px; font-size: 14px; }
             .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -280,7 +281,8 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
     if (level === "Critical") return "text-red-600";
     if (level === "High") return "text-red-500";
     if (level === "Moderate") return "text-yellow-500";
-    return "text-green-500";
+    if (level === "Low") return "text-green-500";
+    return "text-gray-400";
   };
 
   const getStatusColor = (status) => {
