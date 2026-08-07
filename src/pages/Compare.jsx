@@ -18,7 +18,7 @@ const Compare = () => {
     const fetchReports = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`${API_BASE_URL}/api/v1/reanalyze`, {
+        const res = await fetch(`${API_BASE_URL}/api/v1/medical_reports`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -76,9 +76,11 @@ const Compare = () => {
       const r2 = getAnalysis(report2);
       const text2 = report2.extracted_text || r2?.extracted_text || "";
 
-      // Call backend to re-analyze in chosen language
+      // Call backend to re-analyze in chosen language. Uses /reanalyze,
+      // which re-runs the AI over text we already have — it deliberately
+      // doesn't touch the originally stored report.
       const [res1, res2] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/v1/upload_report`, {
+        fetch(`${API_BASE_URL}/api/v1/reanalyze`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -87,10 +89,9 @@ const Compare = () => {
           body: JSON.stringify({
             extracted_text: text1,
             language: language,
-            compare_mode: true
           }),
         }),
-        fetch(`${API_BASE_URL}/api/v1/upload_report`, {
+        fetch(`${API_BASE_URL}/api/v1/reanalyze`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -99,7 +100,6 @@ const Compare = () => {
           body: JSON.stringify({
             extracted_text: text2,
             language: language,
-            compare_mode: true
           }),
         })
       ]);

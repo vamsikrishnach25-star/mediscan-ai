@@ -4,6 +4,7 @@ import {
   Line,
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -46,25 +47,28 @@ const Dashboard = () => {
     );
   }
 
-  // Stats
+  // Stats — risk_level lives inside ai_analysis, not on the report itself,
+  // and the AI only ever outputs Low/Moderate/High/Critical (never "Medium").
+  const getRisk = (r) => r.ai_analysis?.risk_level;
   const totalReports = reports.length;
-  const highRisk = reports.filter((r) => r.risk_level === "High").length;
-  const lowRisk = reports.filter((r) => r.risk_level === "Low").length;
+  const highRisk = reports.filter((r) => ["High", "Critical"].includes(getRisk(r))).length;
+  const lowRisk = reports.filter((r) => getRisk(r) === "Low").length;
+  const moderateRisk = reports.filter((r) => getRisk(r) === "Moderate").length;
 
-  // Chart data
-  const chartData = reports.map((r) => ({
-    date: new Date(r.created_at).toLocaleDateString(),
-    risk:
-      r.risk_level === "Low"
-        ? 1
-        : r.risk_level === "Medium"
-        ? 2
-        : 3,
-  }));
+  const RISK_SCORE = { Low: 1, Moderate: 2, High: 3, Critical: 4 };
+
+  // Chart data — oldest first, so the trend line reads left-to-right
+  const chartData = [...reports]
+    .reverse()
+    .map((r) => ({
+      date: new Date(r.created_at).toLocaleDateString(),
+      risk: RISK_SCORE[getRisk(r)] ?? 0,
+    }));
 
   const riskData = [
-    { name: "Low", value: lowRisk },
-    { name: "High", value: highRisk },
+    { name: "Low", value: lowRisk, color: "#22c55e" },
+    { name: "Moderate", value: moderateRisk, color: "#f59e0b" },
+    { name: "High", value: highRisk, color: "#ef4444" },
   ];
 
   return (
@@ -134,9 +138,13 @@ const Dashboard = () => {
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={riskData}>
                   <XAxis dataKey="name" />
-                  <YAxis />
+                  <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="value" fill="#ef4444" />
+                  <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                    {riskData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
