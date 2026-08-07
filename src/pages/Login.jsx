@@ -1,16 +1,24 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Stethoscope, ShieldCheck } from "lucide-react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, Stethoscope, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const [email, setEmail] = useState(location.state?.email || "");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [success] = useState(
+    location.state?.passwordReset
+      ? "Password updated — sign in with your new password."
+      : location.state?.justVerified
+      ? "Account verified — sign in to continue."
+      : ""
+  );
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -81,6 +89,11 @@ const Login = () => {
               {error}
             </div>
           )}
+          {!error && success && (
+            <div className="mb-5 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2.5">
+              <CheckCircle2 size={16} /> {success}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div>
@@ -99,7 +112,12 @@ const Login = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-medium text-slate-700">Password</label>
+                <Link to="/forgot-password" className="text-xs font-medium text-blue-600 hover:text-blue-700">
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input

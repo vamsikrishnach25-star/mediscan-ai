@@ -2,14 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff, Stethoscope, ShieldCheck, MailCheck, Check } from "lucide-react";
 import { registerUser, verifyOtp, resendOtp } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
 
 const RESEND_COOLDOWN = 30;
 
 const Signup = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const [step, setStep] = useState(location.state?.step === 2 ? 2 : 1);
   const [name, setName] = useState("");
@@ -66,13 +64,11 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const res = await verifyOtp(email, otp);
-      login({ name: name || email.split("@")[0], email });
-      if (res?.token) {
-        navigate("/welcome");
-      } else {
-        navigate("/login");
-      }
+      await verifyOtp(email, otp);
+      // Verification also returns a token, but we deliberately don't use it
+      // to auto-sign the user in — send them to the login page instead.
+      localStorage.removeItem("token");
+      navigate("/login", { state: { justVerified: true, email } });
     } catch (err) {
       setError(err.message);
     } finally {
