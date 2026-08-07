@@ -71,8 +71,15 @@ const Reports = () => {
 
   const getTrend = () => {
     if (reports.length < 2) return null;
-    const latest = getRiskScore(getRiskLevel(reports[0]));
-    const previous = getRiskScore(getRiskLevel(reports[1]));
+    const latestRisk = getRiskLevel(reports[0]);
+    const previousRisk = getRiskLevel(reports[1]);
+    // "Unknown" means a report couldn't be read/scored at all — it isn't a
+    // risk level on the same scale as Low/Moderate/High/Critical, so
+    // comparing it numerically would misreport e.g. Unknown -> Low as
+    // "worsening" when it's really just the first report being unreadable.
+    if (latestRisk === "Unknown" || previousRisk === "Unknown") return null;
+    const latest = getRiskScore(latestRisk);
+    const previous = getRiskScore(previousRisk);
     if (latest < previous) return "improving";
     if (latest > previous) return "worsening";
     return "stable";
@@ -350,7 +357,9 @@ const Reports = () => {
                         <p className={`text-2xl font-bold ${
                           risk === "Low" ? "text-green-500"
                           : risk === "Moderate" ? "text-yellow-500"
-                          : "text-red-500"
+                          : risk === "High" ? "text-red-500"
+                          : risk === "Critical" ? "text-red-700"
+                          : "text-gray-400"
                         }`}>{risk}</p>
                         <p className="text-sm text-gray-500 mt-1">{a.severity_score || 0} abnormal marker(s)</p>
                       </div>

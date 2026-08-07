@@ -292,7 +292,9 @@ const Compare = () => {
                   <span className="font-bold" style={{ color: getRiskColor(risk2) }}>{risk2}</span>
                 </div>
                 <div className="mt-2">
-                  {getRiskScore(risk2) < getRiskScore(risk1) ? (
+                  {risk1 === "Unknown" || risk2 === "Unknown" ? (
+                    <span className="text-gray-400 font-semibold text-sm">— Not comparable (one report unreadable)</span>
+                  ) : getRiskScore(risk2) < getRiskScore(risk1) ? (
                     <span className="text-green-500 font-semibold text-sm">✅ Improved!</span>
                   ) : getRiskScore(risk2) > getRiskScore(risk1) ? (
                     <span className="text-red-500 font-semibold text-sm">⚠️ Worsened</span>
