@@ -1,11 +1,11 @@
-import { Menu } from "lucide-react";
+import { Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useLocation } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
   const { logout, user } = useAuth();
-  const { toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const getTitle = () => {
@@ -37,16 +37,17 @@ const Navbar = ({ toggleSidebar }) => {
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <button
           onClick={toggleTheme}
-          className="text-sm px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800">
-          Theme
+          aria-label="Toggle theme"
+          className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
         </button>
         <button
           onClick={logout}
-          className="text-sm px-3 py-1 rounded-lg bg-red-500 text-white">
-          Logout
+          className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950 dark:text-red-400 transition">
+          <LogOut size={15} /> Logout
         </button>
       </div>
     </header>

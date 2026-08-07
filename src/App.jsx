@@ -8,6 +8,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import AIScan from "./pages/AIScan";
@@ -37,6 +38,7 @@ function App() {
 
           {/* Public Landing Page */}
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
 
           {/* AUTH ROUTES */}
           <Route element={<AuthLayout />}>

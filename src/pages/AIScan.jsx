@@ -333,7 +333,7 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
               onClick={handleAnalyze}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto">
               {loading ? <Loader2 className="animate-spin" /> : <FileText />}
-              {loading ? "Analyzing..." : "Analyze Report"}
+              {loading ? "⏳ Analyzing... (may take 30-60 sec)" : "Analyze Report"}
             </button>
           </div>
         )}

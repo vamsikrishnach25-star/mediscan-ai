@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, Stethoscope, ShieldCheck } from "lucide-react";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,231 +10,133 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
       setLoading(true);
       const res = await loginUser(email, password);
       if (res?.token) {
-        localStorage.setItem("token", res.token);
-        login({ name: res.name || email.split("@")[0], email: email });
+        login({ name: res.name || email.split("@")[0], email });
         navigate("/welcome");
       } else {
-        alert("No token received");
+        setError("No token received. Please try again.");
       }
     } catch (err) {
-      alert(err.message);
+      if (err.unverified) {
+        navigate("/signup", { state: { email: err.email || email, step: 2 } });
+        return;
+      }
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      width: "100vw",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      position: "relative",
-      overflow: "hidden",
-      background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)"
-    }}>
+    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 px-4 py-12">
+      <div className="w-full max-w-[920px] grid md:grid-cols-2 rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white">
 
-      {/* Animated Background Elements */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-        <div style={{
-          position: "absolute", width: "400px", height: "400px", borderRadius: "50%",
-          background: "radial-gradient(circle, #3b82f6, transparent)",
-          opacity: 0.1, top: "-10%", left: "-10%", animation: "pulse 4s infinite"
-        }} />
-        <div style={{
-          position: "absolute", width: "300px", height: "300px", borderRadius: "50%",
-          background: "radial-gradient(circle, #06b6d4, transparent)",
-          opacity: 0.1, bottom: "-5%", right: "-5%", animation: "pulse 6s infinite"
-        }} />
-        <div style={{
-          position: "absolute", width: "200px", height: "200px", borderRadius: "50%",
-          background: "radial-gradient(circle, #8b5cf6, transparent)",
-          opacity: 0.08, top: "40%", right: "20%", animation: "pulse 5s infinite"
-        }} />
-
-        {/* Floating Medical Icons */}
-        {["🫀", "🧬", "💊", "🩺", "🔬", "🩻", "⚕️", "🏥"].map((icon, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            fontSize: "24px",
-            opacity: 0.08,
-            left: `${8 + i * 12}%`,
-            top: `${15 + (i % 3) * 25}%`,
-            animation: `float ${3 + i * 0.5}s ease-in-out infinite alternate`,
-            animationDelay: `${i * 0.3}s`
-          }}>
-            {icon}
+        {/* Left — brand panel */}
+        <div className="hidden md:flex flex-col justify-between bg-gradient-to-br from-blue-700 to-cyan-600 text-white p-10">
+          <div>
+            <div className="flex items-center gap-2 mb-10">
+              <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
+                <Stethoscope size={20} />
+              </div>
+              <span className="text-lg font-bold">MediScan AI</span>
+            </div>
+            <h2 className="text-3xl font-bold leading-tight mb-4">
+              Understand your medical reports in seconds.
+            </h2>
+            <p className="text-blue-100 text-sm leading-relaxed max-w-xs">
+              Upload a report, get instant AI-backed analysis, biomarker breakdowns,
+              and clear next steps — trusted by patients who want clarity, not jargon.
+            </p>
           </div>
-        ))}
 
-        {/* Grid Pattern */}
-        <div style={{
-          position: "absolute", inset: 0, opacity: 0.04,
-          backgroundImage: "linear-gradient(#3b82f6 1px, transparent 1px), linear-gradient(90deg, #3b82f6 1px, transparent 1px)",
-          backgroundSize: "50px 50px"
-        }} />
-
-        {/* Heartbeat Line */}
-        <svg style={{ position: "absolute", bottom: "60px", left: 0, width: "100%", opacity: 0.08 }}
-          height="60" viewBox="0 0 1200 60">
-          <polyline
-            points="0,30 100,30 150,30 200,10 250,50 300,30 350,30 400,30 450,5 500,55 550,30 600,30 650,30 700,10 750,50 800,30 900,30 1000,30 1050,5 1100,55 1150,30 1200,30"
-            fill="none" stroke="#3b82f6" strokeWidth="2" />
-        </svg>
-      </div>
-
-      {/* Main Content */}
-      <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px", margin: "0 16px" }}>
-
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            width: "64px", height: "64px", borderRadius: "16px", marginBottom: "16px",
-            background: "linear-gradient(135deg, #3b82f6, #06b6d4)"
-          }}>
-            <span style={{ fontSize: "32px" }}>🩺</span>
+          <div className="flex items-center gap-2 text-blue-100 text-sm">
+            <ShieldCheck size={18} />
+            Your medical data is encrypted and never shared.
           </div>
-          <h1 style={{ fontSize: "28px", fontWeight: "bold", color: "white", margin: 0 }}>
-            MediScan AI
-          </h1>
-          <p style={{ color: "#93c5fd", marginTop: "4px", fontSize: "14px" }}>
-            AI Powered Health Report Analysis
-          </p>
         </div>
 
-        {/* Card */}
-        <div style={{
-          borderRadius: "20px", padding: "32px",
-          background: "rgba(255, 255, 255, 0.05)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 25px 50px rgba(0,0,0,0.5)"
-        }}>
-          <h2 style={{ fontSize: "24px", fontWeight: "bold", color: "white", margin: "0 0 8px 0" }}>
-            Welcome Back
-          </h2>
-          <p style={{ color: "#9ca3af", fontSize: "14px", margin: "0 0 24px 0" }}>
-            Sign in to access your health reports
-          </p>
+        {/* Right — form */}
+        <div className="p-8 sm:p-10 flex flex-col justify-center">
+          <div className="md:hidden flex items-center gap-2 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+              <Stethoscope size={20} />
+            </div>
+            <span className="text-lg font-bold text-slate-900">MediScan AI</span>
+          </div>
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <h1 className="text-2xl font-bold text-slate-900 mb-1">Welcome back</h1>
+          <p className="text-slate-500 text-sm mb-7">Sign in to access your health reports.</p>
 
-            {/* Email */}
+          {error && (
+            <div className="mb-5 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div>
-              <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
-                Email Address
-              </label>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "16px" }}>📧</span>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
+              <div className="relative">
+                <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  style={{
-                    width: "100%", padding: "12px 16px 12px 40px",
-                    borderRadius: "12px", color: "white",
-                    background: "rgba(255,255,255,0.07)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    outline: "none", fontSize: "15px",
-                    boxSizing: "border-box",
-                    transition: "border 0.2s"
-                  }}
-                  onFocus={e => e.target.style.border = "1px solid #3b82f6"}
-                  onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
-              <label style={{ color: "#d1d5db", fontSize: "14px", fontWeight: "500", display: "block", marginBottom: "8px" }}>
-                Password
-              </label>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "16px" }}>🔒</span>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <div className="relative">
+                <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  style={{
-                    width: "100%", padding: "12px 48px 12px 40px",
-                    borderRadius: "12px", color: "white",
-                    background: "rgba(255,255,255,0.07)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    outline: "none", fontSize: "15px",
-                    boxSizing: "border-box",
-                    transition: "border 0.2s"
-                  }}
-                  onFocus={e => e.target.style.border = "1px solid #3b82f6"}
-                  onBlur={e => e.target.style.border = "1px solid rgba(255,255,255,0.1)"}
+                  className="w-full pl-10 pr-11 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute", right: "12px", top: "50%",
-                    transform: "translateY(-50%)", background: "none",
-                    border: "none", cursor: "pointer", fontSize: "16px"
-                  }}>
-                  {showPassword ? "🙈" : "👁️"}
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%", padding: "14px",
-                borderRadius: "12px", border: "none",
-                fontWeight: "600", fontSize: "16px", color: "white",
-                cursor: loading ? "not-allowed" : "pointer",
-                background: loading
-                  ? "rgba(59,130,246,0.5)"
-                  : "linear-gradient(135deg, #3b82f6, #06b6d4)",
-                boxShadow: loading ? "none" : "0 4px 20px rgba(59,130,246,0.4)",
-                transition: "all 0.3s"
-              }}>
-              {loading ? "Signing in..." : "Sign In →"}
+              className="w-full py-2.5 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition shadow-sm"
+            >
+              {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
-          <p style={{ textAlign: "center", color: "#9ca3af", fontSize: "14px", marginTop: "24px" }}>
+          <p className="text-center text-sm text-slate-500 mt-6">
             Don't have an account?{" "}
-            <Link to="/signup" style={{ color: "#60a5fa", fontWeight: "500", textDecoration: "none" }}>
-              Create Account
+            <Link to="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+              Create one
             </Link>
           </p>
         </div>
-
-        <p style={{ textAlign: "center", color: "#4b5563", fontSize: "12px", marginTop: "24px" }}>
-          🔒 Your medical data is encrypted and secure
-        </p>
       </div>
-
-      <style>{`
-        @keyframes float {
-          from { transform: translateY(0px) rotate(0deg); }
-          to { transform: translateY(-20px) rotate(10deg); }
-        }
-        input::placeholder { color: #6b7280; }
-      `}</style>
     </div>
   );
 };

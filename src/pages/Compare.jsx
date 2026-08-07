@@ -18,7 +18,7 @@ const Compare = () => {
     const fetchReports = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`${API_BASE_URL}/api/v1/medical_reports`, {
+        const res = await fetch(`${API_BASE_URL}/api/v1/reanalyze`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

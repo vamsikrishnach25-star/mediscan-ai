@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, FileText, Settings, Brain, Home, GitCompare
+  LayoutDashboard, FileText, Settings, Brain, Home, GitCompare, Stethoscope
 } from "lucide-react";
 
 const Sidebar = ({ sidebarOpen }) => {
@@ -20,7 +20,10 @@ const Sidebar = ({ sidebarOpen }) => {
         onClick={() => navigate("/welcome")}
         className="p-6 text-xl font-bold text-blue-600 cursor-pointer hover:text-blue-700 transition flex items-center gap-2"
       >
-        <span>🩺</span> MediScan AI
+        <span className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center">
+          <Stethoscope size={16} />
+        </span>
+        MediScan AI
       </div>
 
       <nav className="space-y-2 px-4">

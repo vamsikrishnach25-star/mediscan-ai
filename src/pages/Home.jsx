@@ -1,424 +1,322 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  Stethoscope, Microscope, BrainCircuit, HeartPulse, Salad, BarChart3, AlertTriangle,
+  Upload, Zap, Lightbulb, ShieldCheck, Droplet, Wind, TestTube2, Candy, Pill,
+  Bolt, FlaskConical, Bone, Activity, Star, Menu, X, Mail, MapPin, Phone
+} from "lucide-react";
 
 const Home = () => {
-  const [scrollY, setScrollY] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const features = [
-    {
-      icon: "🔬",
-      title: "OCR Text Extraction",
-      desc: "Automatically reads and extracts text from any medical report image using advanced Tesseract OCR technology."
-    },
-    {
-      icon: "🤖",
-      title: "AI-Powered Analysis",
-      desc: "Powered by LLaMA 3.3 70B AI model to analyze biomarkers and generate intelligent health insights."
-    },
-    {
-      icon: "🩺",
-      title: "Doctor Recommendations",
-      desc: "Get specialist recommendations, urgency levels, and lifestyle tips based on your specific report findings."
-    },
-    {
-      icon: "🥗",
-      title: "Food Suggestions",
-      desc: "Personalized food suggestions — what to eat and avoid — based on your abnormal biomarker levels."
-    },
-    {
-      icon: "📊",
-      title: "Biomarker Status",
-      desc: "Visual color-coded biomarker status showing which values are Normal, High, or Low at a glance."
-    },
-    {
-      icon: "⚠️",
-      title: "Warning Signs",
-      desc: "Critical warning signs to watch for that require immediate medical attention highlighted clearly."
-    }
+    { icon: Microscope, title: "OCR Text Extraction", desc: "Automatically reads and extracts text from any medical report image using advanced OCR technology." },
+    { icon: BrainCircuit, title: "AI-Powered Analysis", desc: "Advanced AI models analyze your biomarkers and generate clear, medically-grounded health insights." },
+    { icon: Stethoscope, title: "Doctor Recommendations", desc: "Get specialist recommendations, urgency levels, and lifestyle tips based on your report findings." },
+    { icon: Salad, title: "Food Suggestions", desc: "Personalized guidance on what to eat and avoid, based on your specific abnormal biomarker levels." },
+    { icon: BarChart3, title: "Biomarker Status", desc: "Color-coded biomarker status shows which values are normal, high, or low at a glance." },
+    { icon: AlertTriangle, title: "Warning Signs", desc: "Critical warning signs that need attention are surfaced clearly, so nothing gets missed." },
   ];
 
   const steps = [
-    {
-      step: "01",
-      icon: "📤",
-      title: "Upload Your Report",
-      desc: "Upload any medical report image — Blood, Thyroid, Liver, Kidney, Lipid, Urine, or any other test."
-    },
-    {
-      step: "02",
-      icon: "⚡",
-      title: "AI Analyzes It",
-      desc: "Our AI reads the report using OCR, identifies biomarkers, and runs intelligent medical analysis."
-    },
-    {
-      step: "03",
-      icon: "💡",
-      title: "Get Full Insights",
-      desc: "Receive complete analysis with findings, food suggestions, doctor advice, and warning signs."
-    }
+    { step: "01", icon: Upload, title: "Upload your report", desc: "Upload any medical report image — blood, thyroid, liver, kidney, lipid, urine, or any other test." },
+    { step: "02", icon: Zap, title: "AI analyzes it", desc: "Our AI reads the report using OCR, identifies biomarkers, and runs a full medical analysis." },
+    { step: "03", icon: Lightbulb, title: "Get full insights", desc: "Receive a complete breakdown with findings, food suggestions, doctor advice, and warning signs." },
   ];
 
   const reportTypes = [
-    "🩸 Complete Blood Count",
-    "🦋 Thyroid Function",
-    "🫀 Lipid Profile",
-    "🫁 Liver Function",
-    "💧 Kidney Function",
-    "🧪 Urine Analysis",
-    "🍬 Diabetes Panel",
-    "💊 Vitamin Panel",
-    "⚡ Electrolytes",
-    "🔬 Hormone Panel",
-    "🩻 X-Ray Reports",
-    "📋 ECG Reports"
+    { icon: Droplet, label: "Complete Blood Count" },
+    { icon: Activity, label: "Thyroid Function" },
+    { icon: HeartPulse, label: "Lipid Profile" },
+    { icon: Wind, label: "Liver Function" },
+    { icon: TestTube2, label: "Kidney Function" },
+    { icon: FlaskConical, label: "Urine Analysis" },
+    { icon: Candy, label: "Diabetes Panel" },
+    { icon: Pill, label: "Vitamin Panel" },
+    { icon: Bolt, label: "Electrolytes" },
+    { icon: Microscope, label: "Hormone Panel" },
+    { icon: Bone, label: "X-Ray Reports" },
+    { icon: HeartPulse, label: "ECG Reports" },
   ];
 
+  const testimonials = [
+    { name: "Ananya R.", role: "Patient", quote: "I finally understood my thyroid report without googling every term. The food suggestions were a nice touch." },
+    { name: "Dr. Karthik S.", role: "General Physician", quote: "A useful first pass for patients before their appointment — it helps them ask better questions." },
+    { name: "Meera P.", role: "Caregiver", quote: "Uploading my father's reports and getting a plain-language summary has made managing his care much easier." },
+  ];
+
+  const faqs = [
+    { q: "Is my medical data secure?", a: "Yes. Reports are encrypted in transit and at rest, and are only ever visible to your account." },
+    { q: "What report types are supported?", a: "Blood, thyroid, liver, kidney, lipid, urine, diabetes, vitamin, hormone panels, X-rays, ECGs, and more." },
+    { q: "Does this replace a doctor?", a: "No — MediScan AI helps you understand your reports and prepare questions, but always consult a licensed physician for diagnosis and treatment." },
+    { q: "Is it free to use?", a: "Yes, creating an account and analyzing reports is free to get started." },
+  ];
+
+  const navLink = "text-sm font-medium text-slate-600 hover:text-blue-600 transition";
+
   return (
-    <div style={{ background: "#0f172a", minHeight: "100vh", color: "white", fontFamily: "system-ui, sans-serif" }}>
+    <div className="bg-white text-slate-900" style={{ fontFamily: "system-ui, sans-serif" }}>
 
       {/* Navbar */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        padding: "16px 32px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: scrollY > 50 ? "rgba(15,23,42,0.95)" : "transparent",
-        backdropFilter: scrollY > 50 ? "blur(20px)" : "none",
-        borderBottom: scrollY > 50 ? "1px solid rgba(255,255,255,0.1)" : "none",
-        transition: "all 0.3s"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{
-            width: "36px", height: "36px", borderRadius: "10px",
-            background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "18px"
-          }}>🩺</div>
-          <span style={{ fontSize: "20px", fontWeight: "bold" }}>MediScan AI</span>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all ${scrolled ? "bg-white/90 backdrop-blur border-b border-slate-200 shadow-sm" : "bg-transparent"}`}>
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+              <Stethoscope size={18} />
+            </div>
+            <span className="font-bold text-lg">MediScan AI</span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#features" className={navLink}>Features</a>
+            <a href="#how-it-works" className={navLink}>How it works</a>
+            <a href="#testimonials" className={navLink}>Reviews</a>
+            <a href="#faq" className={navLink}>FAQ</a>
+            <Link to="/about" className={navLink}>About</Link>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3">
+            <Link to="/login" className="text-sm font-semibold px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+              Log in
+            </Link>
+            <Link to="/signup" className="text-sm font-semibold px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition">
+              Get started
+            </Link>
+          </div>
+
+          <button className="md:hidden text-slate-700" onClick={() => setMenuOpen((v) => !v)}>
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <Link to="/login" style={{
-            padding: "8px 20px", borderRadius: "8px", fontSize: "14px",
-            fontWeight: "600", color: "white", textDecoration: "none",
-            border: "1px solid rgba(255,255,255,0.2)",
-            background: "transparent", transition: "all 0.2s"
-          }}
-            onMouseOver={e => e.target.style.background = "rgba(255,255,255,0.1)"}
-            onMouseOut={e => e.target.style.background = "transparent"}>
-            Login
-          </Link>
-          <Link to="/signup" style={{
-            padding: "8px 20px", borderRadius: "8px", fontSize: "14px",
-            fontWeight: "600", color: "white", textDecoration: "none",
-            background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-            boxShadow: "0 4px 15px rgba(59,130,246,0.4)"
-          }}>
-            Get Started
-          </Link>
-        </div>
+
+        {menuOpen && (
+          <div className="md:hidden bg-white border-t border-slate-200 px-6 py-4 flex flex-col gap-4">
+            <a href="#features" className={navLink} onClick={() => setMenuOpen(false)}>Features</a>
+            <a href="#how-it-works" className={navLink} onClick={() => setMenuOpen(false)}>How it works</a>
+            <a href="#testimonials" className={navLink} onClick={() => setMenuOpen(false)}>Reviews</a>
+            <a href="#faq" className={navLink} onClick={() => setMenuOpen(false)}>FAQ</a>
+            <Link to="/about" className={navLink} onClick={() => setMenuOpen(false)}>About</Link>
+            <div className="flex gap-3 pt-2">
+              <Link to="/login" className="flex-1 text-center text-sm font-semibold px-4 py-2 rounded-lg border border-slate-300 text-slate-700">Log in</Link>
+              <Link to="/signup" className="flex-1 text-center text-sm font-semibold px-4 py-2 rounded-lg text-white bg-blue-600">Get started</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* Hero Section */}
-      <section style={{
-        minHeight: "100vh", display: "flex", alignItems: "center",
-        justifyContent: "center", textAlign: "center",
-        padding: "120px 24px 80px",
-        position: "relative", overflow: "hidden"
-      }}>
-        {/* Background Effects */}
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-          <div style={{
-            position: "absolute", width: "600px", height: "600px",
-            borderRadius: "50%", top: "-200px", left: "-200px",
-            background: "radial-gradient(circle, rgba(59,130,246,0.15), transparent)",
-          }} />
-          <div style={{
-            position: "absolute", width: "500px", height: "500px",
-            borderRadius: "50%", bottom: "-150px", right: "-150px",
-            background: "radial-gradient(circle, rgba(6,182,212,0.15), transparent)",
-          }} />
-          <div style={{
-            position: "absolute", inset: 0, opacity: 0.03,
-            backgroundImage: "linear-gradient(#3b82f6 1px, transparent 1px), linear-gradient(90deg, #3b82f6 1px, transparent 1px)",
-            backgroundSize: "60px 60px"
-          }} />
-
-          {/* Floating icons */}
-          {["🫀", "🧬", "💊", "🩺", "🔬", "🩻", "⚕️", "🏥", "💉", "🧪"].map((icon, i) => (
-            <div key={i} style={{
-              position: "absolute", fontSize: "28px", opacity: 0.06,
-              left: `${5 + i * 10}%`,
-              top: `${10 + (i % 4) * 22}%`,
-              animation: `float ${4 + i * 0.5}s ease-in-out infinite alternate`,
-              animationDelay: `${i * 0.4}s`
-            }}>{icon}</div>
-          ))}
-        </div>
-
-        <div style={{ position: "relative", zIndex: 1, maxWidth: "800px" }}>
-          {/* Badge */}
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: "8px",
-            padding: "6px 16px", borderRadius: "999px", marginBottom: "24px",
-            background: "rgba(59,130,246,0.15)",
-            border: "1px solid rgba(59,130,246,0.3)",
-            fontSize: "13px", color: "#93c5fd"
-          }}>
-            <span>⚡</span> Powered by LLaMA 3.3 70B AI
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white pt-40 pb-24 px-6">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
+          backgroundImage: "linear-gradient(#2563eb 1px, transparent 1px), linear-gradient(90deg, #2563eb 1px, transparent 1px)",
+          backgroundSize: "48px 48px"
+        }} />
+        <div className="max-w-4xl mx-auto text-center relative">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-6">
+            <Zap size={14} /> AI-powered health report analysis
           </div>
-
-          <h1 style={{
-            fontSize: "clamp(36px, 6vw, 72px)",
-            fontWeight: "800", lineHeight: "1.1",
-            marginBottom: "24px", margin: "0 0 24px 0"
-          }}>
-            Understand Your{" "}
-            <span style={{
-              background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent"
-            }}>
-              Medical Reports
-            </span>
-            {" "}with AI
+          <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6">
+            Understand your{" "}
+            <span className="text-blue-600">medical reports</span>{" "}
+            in plain language
           </h1>
-
-          <p style={{
-            fontSize: "18px", color: "#94a3b8", lineHeight: "1.7",
-            marginBottom: "40px", maxWidth: "600px", margin: "0 auto 40px"
-          }}>
-            Upload any medical report and get instant AI-powered analysis with
-            food suggestions, doctor recommendations, and warning signs — all in seconds.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Upload any medical report and get instant AI-powered analysis — with food suggestions,
+            doctor recommendations, and warning signs — all in seconds.
           </p>
-
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link to="/signup" style={{
-              padding: "14px 32px", borderRadius: "12px",
-              fontSize: "16px", fontWeight: "700",
-              color: "white", textDecoration: "none",
-              background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-              boxShadow: "0 8px 30px rgba(59,130,246,0.4)",
-              transition: "transform 0.2s"
-            }}
-              onMouseOver={e => e.currentTarget.style.transform = "translateY(-2px)"}
-              onMouseOut={e => e.currentTarget.style.transform = "translateY(0)"}>
-              🚀 Start for Free
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link to="/signup" className="px-8 py-3.5 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition">
+              Start for free
             </Link>
-            <Link to="/login" style={{
-              padding: "14px 32px", borderRadius: "12px",
-              fontSize: "16px", fontWeight: "700",
-              color: "white", textDecoration: "none",
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              transition: "transform 0.2s"
-            }}
-              onMouseOver={e => e.currentTarget.style.transform = "translateY(-2px)"}
-              onMouseOut={e => e.currentTarget.style.transform = "translateY(0)"}>
-              Sign In →
+            <Link to="/login" className="px-8 py-3.5 rounded-xl font-semibold text-slate-700 border border-slate-300 hover:bg-slate-50 transition">
+              Sign in
             </Link>
           </div>
 
-          {/* Stats */}
-          <div style={{
-            display: "flex", gap: "40px", justifyContent: "center",
-            marginTop: "60px", flexWrap: "wrap"
-          }}>
+          <div className="flex flex-wrap justify-center gap-10 mt-16">
             {[
-              { value: "12+", label: "Report Types" },
-              { value: "30+", label: "Biomarkers" },
-              { value: "AI", label: "Powered Analysis" },
-            ].map((stat, i) => (
-              <div key={i} style={{ textAlign: "center" }}>
-                <div style={{
-                  fontSize: "32px", fontWeight: "800",
-                  background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-                }}>{stat.value}</div>
-                <div style={{ color: "#64748b", fontSize: "13px", marginTop: "4px" }}>{stat.label}</div>
+              { value: "12+", label: "Report types" },
+              { value: "30+", label: "Biomarkers tracked" },
+              { value: "~10s", label: "Analysis time" },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-3xl font-extrabold text-blue-600">{s.value}</div>
+                <div className="text-sm text-slate-500 mt-1">{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Report Types Section */}
-      <section style={{ padding: "80px 24px", background: "rgba(255,255,255,0.02)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: "32px", fontWeight: "700", marginBottom: "12px" }}>
-            Works with Any Medical Report
-          </h2>
-          <p style={{ color: "#64748b", marginBottom: "48px" }}>
-            Our AI understands all types of medical tests and reports
-          </p>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "12px"
-          }}>
-            {reportTypes.map((type, i) => (
-              <div key={i} style={{
-                padding: "14px 16px", borderRadius: "12px",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                fontSize: "14px", fontWeight: "500",
-                transition: "all 0.2s", cursor: "default"
-              }}
-                onMouseOver={e => {
-                  e.currentTarget.style.background = "rgba(59,130,246,0.1)";
-                  e.currentTarget.style.border = "1px solid rgba(59,130,246,0.3)";
-                }}
-                onMouseOut={e => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                  e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-                }}>
-                {type}
+      {/* Report types */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-3">Works with any medical report</h2>
+          <p className="text-slate-500 mb-12">Our AI understands all common types of medical tests and reports.</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {reportTypes.map(({ icon: Icon, label }, i) => (
+              <div key={i} className="flex items-center gap-2.5 px-4 py-3.5 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition text-left">
+                <Icon size={18} className="text-blue-600 shrink-0" />
+                <span className="text-sm font-medium text-slate-700">{label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it Works */}
-      <section style={{ padding: "80px 24px" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: "32px", fontWeight: "700", marginBottom: "12px" }}>
-            How It Works
-          </h2>
-          <p style={{ color: "#64748b", marginBottom: "48px" }}>
-            Get your medical report analyzed in 3 simple steps
-          </p>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "24px"
-          }}>
-            {steps.map((step, i) => (
-              <div key={i} style={{
-                padding: "32px", borderRadius: "20px",
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                textAlign: "left", position: "relative",
-                transition: "all 0.3s"
-              }}
-                onMouseOver={e => {
-                  e.currentTarget.style.background = "rgba(59,130,246,0.08)";
-                  e.currentTarget.style.border = "1px solid rgba(59,130,246,0.2)";
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                }}
-                onMouseOut={e => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                  e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}>
-                <div style={{
-                  fontSize: "48px", fontWeight: "900", opacity: 0.1,
-                  position: "absolute", top: "16px", right: "20px",
-                  background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-                }}>{step.step}</div>
-                <div style={{ fontSize: "40px", marginBottom: "16px" }}>{step.icon}</div>
-                <h3 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>{step.title}</h3>
-                <p style={{ color: "#64748b", lineHeight: "1.6", fontSize: "15px" }}>{step.desc}</p>
+      {/* How it works */}
+      <section id="how-it-works" className="py-20 px-6 bg-slate-50">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-3">How it works</h2>
+          <p className="text-slate-500 mb-14">Get your medical report analyzed in three simple steps.</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {steps.map(({ step, icon: Icon, title, desc }, i) => (
+              <div key={i} className="relative text-left bg-white rounded-2xl border border-slate-200 p-8 hover:shadow-lg hover:border-blue-200 transition">
+                <span className="absolute top-5 right-6 text-4xl font-extrabold text-blue-50">{step}</span>
+                <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-5">
+                  <Icon size={22} />
+                </div>
+                <h3 className="text-lg font-bold mb-2">{title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section style={{ padding: "80px 24px", background: "rgba(255,255,255,0.02)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: "32px", fontWeight: "700", marginBottom: "12px" }}>
-            Everything You Need
-          </h2>
-          <p style={{ color: "#64748b", marginBottom: "48px" }}>
-            Comprehensive health insights from a single report upload
-          </p>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "20px"
-          }}>
-            {features.map((f, i) => (
-              <div key={i} style={{
-                padding: "28px", borderRadius: "16px",
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                textAlign: "left", transition: "all 0.3s"
-              }}
-                onMouseOver={e => {
-                  e.currentTarget.style.background = "rgba(59,130,246,0.08)";
-                  e.currentTarget.style.border = "1px solid rgba(59,130,246,0.2)";
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                }}
-                onMouseOut={e => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                  e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}>
-                <div style={{ fontSize: "36px", marginBottom: "16px" }}>{f.icon}</div>
-                <h3 style={{ fontSize: "18px", fontWeight: "700", marginBottom: "8px" }}>{f.title}</h3>
-                <p style={{ color: "#64748b", lineHeight: "1.6", fontSize: "14px" }}>{f.desc}</p>
+      {/* Features */}
+      <section id="features" className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-3">Everything you need</h2>
+          <p className="text-slate-500 mb-14">Comprehensive health insights from a single report upload.</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map(({ icon: Icon, title, desc }, i) => (
+              <div key={i} className="text-left p-7 rounded-2xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition">
+                <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+                  <Icon size={20} />
+                </div>
+                <h3 className="font-bold mb-2">{title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section style={{ padding: "100px 24px", textAlign: "center" }}>
-        <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <div style={{ fontSize: "48px", marginBottom: "24px" }}>🩺</div>
-          <h2 style={{ fontSize: "40px", fontWeight: "800", marginBottom: "16px", lineHeight: "1.2" }}>
-            Ready to Understand Your Health?
-          </h2>
-          <p style={{ color: "#64748b", fontSize: "18px", marginBottom: "40px", lineHeight: "1.7" }}>
-            Join MediScan AI today and get instant AI-powered insights from your medical reports.
-            It's free to get started!
+      {/* Testimonials */}
+      <section id="testimonials" className="py-20 px-6 bg-slate-50">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-3">Trusted by patients and clinicians</h2>
+          <p className="text-slate-500 mb-14">A few words from people who use MediScan AI.</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <div key={i} className="text-left bg-white p-7 rounded-2xl border border-slate-200">
+                <div className="flex gap-1 text-amber-400 mb-4">
+                  {Array.from({ length: 5 }).map((_, j) => <Star key={j} size={16} fill="currentColor" strokeWidth={0} />)}
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed mb-5">"{t.quote}"</p>
+                <div>
+                  <p className="font-semibold text-sm">{t.name}</p>
+                  <p className="text-slate-400 text-xs">{t.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-20 px-6 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-3 text-center">Frequently asked questions</h2>
+          <p className="text-slate-500 mb-12 text-center">Everything you need to know before you get started.</p>
+          <div className="space-y-4">
+            {faqs.map((f, i) => (
+              <details key={i} className="group border border-slate-200 rounded-xl p-5 open:border-blue-200 open:bg-blue-50/40">
+                <summary className="font-semibold text-slate-800 cursor-pointer list-none flex items-center justify-between">
+                  {f.q}
+                  <span className="text-blue-600 group-open:rotate-45 transition text-xl leading-none">+</span>
+                </summary>
+                <p className="text-slate-500 text-sm mt-3 leading-relaxed">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-6 bg-gradient-to-br from-blue-700 to-cyan-600 text-white text-center">
+        <div className="max-w-2xl mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center mx-auto mb-6">
+            <Stethoscope size={26} />
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">Ready to understand your health?</h2>
+          <p className="text-blue-100 mb-9 leading-relaxed">
+            Join MediScan AI today and get instant AI-powered insights from your medical reports. It's free to get started.
           </p>
-          <Link to="/signup" style={{
-            display: "inline-block",
-            padding: "16px 48px", borderRadius: "14px",
-            fontSize: "18px", fontWeight: "700",
-            color: "white", textDecoration: "none",
-            background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
-            boxShadow: "0 8px 30px rgba(59,130,246,0.5)",
-            transition: "transform 0.2s"
-          }}
-            onMouseOver={e => e.currentTarget.style.transform = "translateY(-3px)"}
-            onMouseOut={e => e.currentTarget.style.transform = "translateY(0)"}>
-            🚀 Get Started for Free
+          <Link to="/signup" className="inline-block px-9 py-3.5 rounded-xl font-semibold text-blue-700 bg-white hover:bg-blue-50 shadow-lg transition">
+            Get started for free
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer style={{
-        padding: "32px 24px", textAlign: "center",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        color: "#475569", fontSize: "14px"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "8px" }}>
-          <span>🩺</span>
-          <span style={{ fontWeight: "700", color: "#94a3b8" }}>MediScan AI</span>
-        </div>
-        <p>Built with ❤️ for better health understanding</p>
-        <p style={{ marginTop: "4px" }}>🔒 Your medical data is encrypted and secure</p>
-      </footer>
+      <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 px-6">
+        <div className="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                <Stethoscope size={16} />
+              </div>
+              <span className="font-bold text-white">MediScan AI</span>
+            </div>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              AI-powered analysis that turns medical reports into insights anyone can understand.
+            </p>
+          </div>
 
-      <style>{`
-        @keyframes float {
-          from { transform: translateY(0px) rotate(0deg); }
-          to { transform: translateY(-25px) rotate(10deg); }
-        }
-        * { box-sizing: border-box; }
-        a { cursor: pointer; }
-      `}</style>
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Product</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><a href="#features" className="hover:text-white transition">Features</a></li>
+              <li><a href="#how-it-works" className="hover:text-white transition">How it works</a></li>
+              <li><a href="#faq" className="hover:text-white transition">FAQ</a></li>
+              <li><Link to="/signup" className="hover:text-white transition">Get started</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Company</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link to="/about" className="hover:text-white transition">About us</Link></li>
+              <li><a href="#testimonials" className="hover:text-white transition">Reviews</a></li>
+              <li><Link to="/login" className="hover:text-white transition">Sign in</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Contact</h4>
+            <ul className="space-y-2.5 text-sm">
+              <li className="flex items-center gap-2"><Mail size={14} /> support@mediscan.ai</li>
+              <li className="flex items-center gap-2"><Phone size={14} /> +91 00000 00000</li>
+              <li className="flex items-center gap-2"><MapPin size={14} /> Hyderabad, India</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} MediScan AI. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={14} /> Your medical data is encrypted and secure
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
