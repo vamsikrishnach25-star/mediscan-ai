@@ -376,7 +376,9 @@ const Reports = () => {
                           : risk === "Critical" ? "text-red-700"
                           : "text-gray-400"
                         }`}>{risk}</p>
-                        <p className="text-sm text-gray-500 mt-1">{a.severity_score || 0} abnormal marker(s)</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {risk === "Unknown" ? "Not enough data to assess" : `${a.severity_score || 0} abnormal marker(s)`}
+                        </p>
                       </div>
                     </div>
 

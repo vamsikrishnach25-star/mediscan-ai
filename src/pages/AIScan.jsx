@@ -136,7 +136,11 @@ const AIScan = () => {
             <div class="section">
               <h2>⚠️ Risk Level</h2>
               <p class="risk-${result.risk_level?.toLowerCase()}">${result.risk_level}</p>
-              <p style="font-size:13px; color:#64748b;">${result.severity_score || 0} abnormal marker(s) found</p>
+              <p style="font-size:13px; color:#64748b;">${
+                result.risk_level === "Unknown"
+                  ? "Not enough data to assess"
+                  : `${result.severity_score || 0} abnormal marker(s) found`
+              }</p>
             </div>
           </div>
           ${result.highlighted_biomarkers?.length > 0 ? `
@@ -529,7 +533,9 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
               <p className={`text-2xl font-bold ${getRiskColor(result.risk_level)}`}>
                 {result.risk_level}
               </p>
-              {result.severity_score !== undefined && (
+              {result.risk_level === "Unknown" ? (
+                <p className="text-sm text-gray-500 mt-1">Not enough data to assess</p>
+              ) : result.severity_score !== undefined && (
                 <p className="text-sm text-gray-500 mt-1">
                   {result.severity_score} abnormal marker(s) found
                 </p>
