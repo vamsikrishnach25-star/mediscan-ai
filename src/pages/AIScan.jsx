@@ -18,6 +18,8 @@ const AIScan = () => {
   const resultRef = useRef(null);
   const [language, setLanguage] = useState("English");
   const [doctorView, setDoctorView] = useState(false);
+  const [extractedText, setExtractedText] = useState("");
+  const [showExtractedText, setShowExtractedText] = useState(false);
 
   const handleFileChange = (e) => {
     const uploaded = e.target.files[0];
@@ -36,6 +38,7 @@ const AIScan = () => {
     setLoading(true);
     const uploadRes = await uploadReport(file, language);
     setResult(uploadRes.analysis || uploadRes.ai_analysis || uploadRes);
+    setExtractedText(uploadRes.text || "");
   } catch (err) {
     alert(err.message);
   } finally {
@@ -376,7 +379,7 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
               onClick={handleAnalyze}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto">
               {loading ? <Loader2 className="animate-spin" /> : <FileText />}
-              {loading ? "⏳ Analyzing... (may take 30-60 sec)" : "Analyze Report"}
+              {loading ? "⏳ Analyzing... (PDFs can take a couple of minutes)" : "Analyze Report"}
             </button>
           </div>
         )}
@@ -708,6 +711,30 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {/* Raw Extracted Text — diagnostic view to check what OCR actually read */}
+          {extractedText && (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
+              <button
+                onClick={() => setShowExtractedText(!showExtractedText)}
+                className="flex items-center justify-between w-full text-left">
+                <h2 className="font-semibold text-lg">🔎 Raw Extracted Text (OCR output)</h2>
+                <span className="text-sm text-blue-500">{showExtractedText ? "Hide" : "Show"}</span>
+              </button>
+              {showExtractedText && (
+                <>
+                  <p className="text-xs text-gray-400 mt-2 mb-3">
+                    This is exactly what OCR read from your file, before AI analysis. If a result looks
+                    wrong above, check here first — it tells you whether OCR misread the document or the
+                    AI misinterpreted correctly-read text.
+                  </p>
+                  <pre className="text-xs bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 p-4 rounded-xl overflow-x-auto whitespace-pre-wrap max-h-96 overflow-y-auto">
+                    {extractedText}
+                  </pre>
+                </>
+              )}
             </div>
           )}
 
