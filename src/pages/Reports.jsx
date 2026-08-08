@@ -347,6 +347,21 @@ const Reports = () => {
 
                 return (
                   <>
+                    {a.critical_alerts?.length > 0 && (
+                      <div className="bg-red-50 dark:bg-red-950/40 border-2 border-red-400 rounded-xl p-4">
+                        <h3 className="font-bold text-red-700 dark:text-red-300 flex items-center gap-2 mb-2">
+                          <AlertTriangle size={18} /> Critical Values Detected — Seek Medical Attention
+                        </h3>
+                        <ul className="space-y-1">
+                          {a.critical_alerts.map((c, i) => (
+                            <li key={i} className="text-sm text-red-700 dark:text-red-300">
+                              <span className="font-semibold">{c.name} is critically {c.direction}</span> ({c.value}) — {c.note}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                         <h3 className="font-semibold mb-2">Summary</h3>
@@ -378,6 +393,26 @@ const Reports = () => {
                               <p className="font-medium text-xs">{b.name}</p>
                               <p className="text-lg font-bold">{b.value}</p>
                               <p className="text-xs">{b.status}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {a.highlighted_qualitative_results?.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold mb-3">Test Results</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {a.highlighted_qualitative_results.map((q, i) => (
+                            <div key={i} className={`p-3 rounded-xl text-sm ${
+                              q.status === "ABNORMAL" ? "bg-red-50 text-red-600 dark:bg-red-900/20"
+                              : q.status === "BORDERLINE" ? "bg-yellow-50 text-yellow-600 dark:bg-yellow-900/20"
+                              : q.status === "NORMAL" ? "bg-green-50 text-green-600 dark:bg-green-900/20"
+                              : "bg-gray-50 text-gray-500 dark:bg-gray-700/40"
+                            }`}>
+                              <p className="font-medium text-xs">{q.name}</p>
+                              <p className="text-lg font-bold">{q.value}</p>
+                              <p className="text-xs">{q.status}</p>
                             </div>
                           ))}
                         </div>

@@ -280,6 +280,40 @@ const Compare = () => {
             </p>
           </div>
 
+          {/* Critical Alerts */}
+          {(r1?.critical_alerts?.length > 0 || r2?.critical_alerts?.length > 0) && (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className={`rounded-2xl p-4 border-2 ${r1?.critical_alerts?.length > 0 ? "bg-red-50 dark:bg-red-950/40 border-red-400" : "bg-white dark:bg-gray-800 border-transparent"}`}>
+                {r1?.critical_alerts?.length > 0 && (
+                  <>
+                    <h3 className="font-bold text-red-700 dark:text-red-300 text-sm mb-2">🚨 Report 1 Critical Values</h3>
+                    <ul className="space-y-1">
+                      {r1.critical_alerts.map((c, i) => (
+                        <li key={i} className="text-sm text-red-700 dark:text-red-300">
+                          <span className="font-semibold">{c.name} {c.direction}</span> ({c.value}) — {c.note}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+              <div className={`rounded-2xl p-4 border-2 ${r2?.critical_alerts?.length > 0 ? "bg-red-50 dark:bg-red-950/40 border-red-400" : "bg-white dark:bg-gray-800 border-transparent"}`}>
+                {r2?.critical_alerts?.length > 0 && (
+                  <>
+                    <h3 className="font-bold text-red-700 dark:text-red-300 text-sm mb-2">🚨 Report 2 Critical Values</h3>
+                    <ul className="space-y-1">
+                      {r2.critical_alerts.map((c, i) => (
+                        <li key={i} className="text-sm text-red-700 dark:text-red-300">
+                          <span className="font-semibold">{c.name} {c.direction}</span> ({c.value}) — {c.note}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Overall Health Change */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
             <h2 className="font-bold text-lg mb-4">📊 Overall Health Change</h2>
@@ -396,6 +430,48 @@ const Compare = () => {
               </div>
             </div>
           )}
+
+          {/* Qualitative Test Comparison (infection screens, dipstick tests, etc.) */}
+          {(r1?.qualitative_results && Object.keys(r1.qualitative_results).length > 0) ||
+           (r2?.qualitative_results && Object.keys(r2.qualitative_results).length > 0) ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+              <h2 className="font-bold text-lg mb-4">🧪 Test Result Comparison</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b dark:border-gray-700">
+                      <th className="py-3 text-left text-gray-500">Test</th>
+                      <th className="py-3 text-center text-blue-600">Report 1</th>
+                      <th className="py-3 text-center text-gray-400">Change</th>
+                      <th className="py-3 text-center text-purple-600">Report 2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const q1 = r1?.qualitative_results || {};
+                      const q2 = r2?.qualitative_results || {};
+                      const allKeys = [...new Set([...Object.keys(q1), ...Object.keys(q2)])];
+                      return allKeys.map((key, i) => {
+                        const val1 = q1[key] ?? null;
+                        const val2 = q2[key] ?? null;
+                        const changed = val1 !== null && val2 !== null && val1 !== val2;
+                        return (
+                          <tr key={i} className={`border-b dark:border-gray-700 ${changed ? "bg-yellow-50 dark:bg-yellow-900/10" : ""}`}>
+                            <td className="py-3 font-medium">{key}</td>
+                            <td className="py-3 text-center text-blue-600 font-bold">{val1 ?? "—"}</td>
+                            <td className="py-3 text-center">
+                              {changed ? <span className="text-yellow-500 font-bold">≠</span> : <Minus size={16} className="text-gray-300 mx-auto" />}
+                            </td>
+                            <td className="py-3 text-center text-purple-600 font-bold">{val2 ?? "—"}</td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
 
           {/* Findings + Conditions */}
           <div className="grid md:grid-cols-2 gap-6">

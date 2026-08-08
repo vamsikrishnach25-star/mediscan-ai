@@ -382,6 +382,20 @@ Analyzed by MediScan AI — mediscan-ai-bay.vercel.app
       {result && (
         <div className="space-y-6" ref={resultRef}>
 
+          {/* Analysis Failed */}
+          {result.error && (
+            <div className="bg-gray-50 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-2xl p-6 text-center">
+              <AlertTriangle size={28} className="text-gray-400 mx-auto mb-2" />
+              <h2 className="font-bold text-lg text-gray-700 dark:text-gray-200 mb-1">Analysis Didn't Complete</h2>
+              <p className="text-sm text-gray-500 max-w-md mx-auto">{result.summary}</p>
+              <button
+                onClick={handleAnalyze}
+                className="mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                Try Again
+              </button>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 justify-end">
             <button onClick={handleVoice}
